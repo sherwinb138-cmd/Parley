@@ -1,0 +1,15 @@
+{
+  "name": "parley",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "spike": "tsx scripts/spike.ts"
+  },
+  "dependencies": {
+    "@types/node": "^26.6.6",
+    "dotenv": "^18.0.10",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
