@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "spike": "tsx scripts/spike2.ts",
     "check": "tsx scripts/check.ts",
-    "models": "tsx scripts/model-speed.ts"
+    "models": "tsx scripts/model-speed.ts",
+    "seed": "tsx scripts/seed-orders.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.114",
