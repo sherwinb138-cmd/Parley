@@ -46,7 +46,8 @@ async function main() {
   if (cmd === "create") {
     const n = Math.min(Number(arg) || 6, 20);
     for (let i = 0; i < n; i++) {
-      const [item, amount] = CATALOG[(seeds.length + i) % CATALOG.length];
+      // seeds grows by one each round, so its length alone walks through the catalog in order.
+      const [item, amount] = CATALOG[seeds.length % CATALOG.length];
       const { orderId, payLink } = await createOrder({
         amount,
         description: item,
@@ -83,9 +84,13 @@ async function main() {
         }
         console.log(`PAID   ${s.orderId}  ${s.item}  $${s.amount}  tracking: ${s.tracking ?? "none"}${s.note ? `  (${s.note})` : ""}`);
       } catch (e) {
-        const msg = (e as Error).message;
-        s.note = msg.slice(0, 200);
-        console.log(`NOT PAID YET  ${s.orderId}  ${s.item}  -  ${s.note}`);
+        // The SDK's error often has an empty message; the useful part is in its result or body.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const err = e as any;
+        const issue = err?.result?.details?.[0]?.issue || err?.result?.name || err?.message || `HTTP ${err?.statusCode ?? "?"}`;
+        s.note = String(issue).slice(0, 200);
+        const why = s.note === "ORDER_NOT_APPROVED" ? "the buyer has not paid this one yet" : s.note;
+        console.log(`NOT PAID YET  ${s.orderId}  $${s.amount}  ${s.item}  -  ${why}\n   PAY LINK: ${s.payLink}`);
       }
       save(seeds);
     }
