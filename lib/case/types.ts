@@ -69,6 +69,9 @@ export type PolicyCheckRow = {
   options: SettlementOption[];
   evidence_fingerprint: string;
   model: string | null;
+  complaint_type: string | null;
+  /** What the checker did to the AI's answer: how many links it verified and how many it removed. */
+  checker: { links_verified: number; links_removed: number; retried: boolean; notes: string[] } | null;
   created_at: string;
 };
 

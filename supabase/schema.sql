@@ -69,6 +69,10 @@ create table if not exists policy_checks (
   created_at timestamptz not null default now()
 );
 
+-- Added on 10 Nov (Level 6): what kind of complaint it is, and what the checker did to the AI's answer.
+alter table policy_checks add column if not exists complaint_type text;
+alter table policy_checks add column if not exists checker jsonb;
+
 -- The app talks to the database only with the service-role key, from the server.
 -- Row level security with no policies blocks every other kind of access.
 alter table cases enable row level security;

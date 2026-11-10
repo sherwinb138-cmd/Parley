@@ -176,7 +176,8 @@ export async function syncCaseFromPayPal(disputeId: string): Promise<{ caseRow: 
     order_id: order?.id ?? null,
     capture_id: capture?.id ?? tx?.seller_transaction_id ?? null,
     reason: dispute.reason,
-    amount: Number(dispute.dispute_amount?.value || 0),
+    // The order amount. PayPal lowers dispute_amount after a partial offer is accepted, so prefer the payment's own amount.
+    amount: Number(capture?.amount?.value || tx?.gross_amount?.value || dispute.dispute_amount?.value || 0),
     currency: dispute.dispute_amount?.currency_code || "USD",
     paypal_status: dispute.status,
     paypal_stage: dispute.dispute_life_cycle_stage ?? null,

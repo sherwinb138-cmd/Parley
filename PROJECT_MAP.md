@@ -29,8 +29,8 @@ app          the screens the buyer and seller see, and the routes behind the but
 | `lib/paypal/` | Everything that talks to PayPal | working |
 | `lib/db/` | Everything that talks to the database (Supabase) | working |
 | `lib/case/` | What a case is: importing it from PayPal, fingerprints, loading it for a screen | built |
-| `lib/ai/` | Everything that talks to the AI model, plus the checker that verifies its answers | not built yet |
-| `lib/settle/` | Plain code that prices the settlement options. No AI. | not built yet |
+| `lib/ai/` | Everything that talks to the AI model, plus the checker that verifies its answers | built |
+| `lib/settle/` | Plain code that prices the settlement options. No AI. | built |
 | `supabase/` | The database layout, as one SQL file to paste into Supabase | written |
 | `scripts/` | Small programs run by hand from the terminal: tests, demo data | spikes written |
 | `.github/workflows/` | A scheduled job that pings the app every 2 days so the free database stays awake | written |
@@ -63,6 +63,23 @@ app          the screens the buyer and seller see, and the routes behind the but
 | `components/CaseFile.tsx` | The evidence timeline and the add-evidence form. |
 | `components/ImportForm.tsx` | The import box on the home screen. |
 | `components/ui.tsx` | Small shared pieces: status chips, badges, formatters. |
+| `lib/ai/model.ts` | Picks the AI model (Gemini or local Ollama) and forces answers into a fixed shape. |
+| `lib/ai/rules.ts` | The numbered PayPal rules the AI may cite, taken from PayPal's published pages. |
+| `lib/ai/evidence-text.ts` | Wraps evidence in tags so the AI treats it as data, never as instructions. |
+| `lib/ai/photo.ts` | AI job 1: describes an uploaded photo. |
+| `lib/ai/mapper.ts` | AI job 2: one call that lists claims and links each to evidence with a quote. |
+| `lib/ai/policy.ts` | AI job 3: the Policy check and the neutral summary. |
+| `lib/ai/validate.ts` | The checker: plain code that removes evidence IDs, quotes and rule IDs the AI made up. |
+| `lib/ai/analyze.ts` | The pipeline: mapper, checker, policy check, checker, pricing. |
+| `lib/case/analyze.ts` | Runs the pipeline for a saved case and stores the result. |
+| `lib/settle/price.ts` | Prices the settlement options with fixed rules. |
+| `app/api/cases/[id]/analyze/route.ts` | The route behind the "Organize the facts" button. |
+| `components/ClaimMap.tsx` | The claim-to-evidence map on screen. |
+| `components/PolicyCheck.tsx` | The Policy check card. |
+| `components/Options.tsx` | The settlement options. |
+| `scripts/fixtures.ts` | A sample case for tests. |
+| `scripts/checker-test.ts` | Tests the checker and pricing with made-up AI answers (`npm run test:checker`). |
+| `scripts/model-test.ts` | Runs the whole AI pipeline on the sample case (`npm run test:ai`). |
 | `supabase/schema.sql` | Creates the tables: cases, evidence, claims, claim links, policy checks. |
 | `app/api/health/route.ts` | A "are you alive?" check that reads the database once. |
 | `app/page.tsx` | The home screen. |

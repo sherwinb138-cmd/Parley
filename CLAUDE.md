@@ -291,7 +291,15 @@ _Update after each session: what works, what's broken, what's next._
   - ✅ `make-offer` partial `REFUND` $15 when sent first (status `WAITING_FOR_SELLER_RESPONSE`). Buyer accepted in the Resolution Center; PayPal created a $15 refund transaction.
   - ❌ `accept-claim` with `PARTIAL_REFUND`, or `REFUND` + amount: `INVALID_ACCEPT_CLAIM_TYPE`. `allowed_response_options` listed only `REFUND`.
   - ✅ `accept-claim` full `REFUND`: dispute RESOLVED, `RESOLVED_BUYER_FAVOUR`, $40 refunded. (Unclear which call triggered it; re-check during the build. Status may read `UNDER_REVIEW` for a while after any action.)
-- **Next:** World 2, Level 4: scaffold, `lib/paypal`, Supabase tables, health route, Render deploy.
+- **World 2, Levels 4 and 5 done (Tue 10 Nov, 17:00).** Hosted at https://parley-qilw.onrender.com (Render free instance for now; upgrade to Starter once the $50 credit is claimed). `npm run check` passes 7 of 7. A real dispute imports as a 9-item case file.
+- **Level 6 built (Tue 10 Nov, evening), not yet run against a live model.** How it differs from the earlier plan:
+  - AI SDK v7: `generateText` with `Output.object({ schema })` (`generateObject` is deprecated).
+  - Models: `gemini-3.6-flash` main, `gemini-3.5-flash-lite` fallback (the "latest" aliases and 3.7/3.8 were overloaded on the free tier).
+  - Two text calls, not four: the mapper, then one policy call that also returns the complaint type and the neutral summary. `classify.ts` and `draft.ts` are folded into `policy.ts`. Photos get one vision call each (`photo.ts`).
+  - Rules R1 to R9 in `lib/ai/rules.ts` come from PayPal's Purchase Protection and Seller Protection pages (read 10 Nov).
+  - `policy_checks` gained `complaint_type` and `checker` columns (see `supabase/schema.sql`).
+  - `npm run test:checker` proves the checker without any AI; `npm run test:ai [ollama]` runs the pipeline on a sample case.
+- **Next:** run the two tests on the laptop (Level 7), then Level 8: offer, agree and settle actions on the buyer and seller screens.
 
 ## 11. Changes from the design debate (9 Nov)
 
