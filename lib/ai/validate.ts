@@ -101,7 +101,14 @@ export function validatePolicy(raw: RawPolicy, evidence: EvidenceRow[]): PolicyC
   }
 
   // Evidence ids mentioned in the summary in brackets must exist too.
-  const summary = raw.summary.replace(/\[(E\d+)\]/gi, (m, id) => (ids.has(id.toUpperCase()) ? `[${id.toUpperCase()}]` : ""));
+  // Handles one id per bracket, [E3], and several, [E4, E5]. Unknown ids are removed; an emptied bracket disappears.
+  const summary = raw.summary
+    .replace(/\[\s*(E\d+(?:\s*(?:,|and|&)\s*E\d+)*)\s*\]/gi, (_m, inner: string) => {
+      const kept = (inner.match(/E\d+/gi) || []).map((id) => id.toUpperCase()).filter((id) => ids.has(id));
+      return kept.length ? `[${kept.join(", ")}]` : "";
+    })
+    .replace(/\s+([.,;])/g, "$1")
+    .replace(/ {2,}/g, " ");
 
   return {
     policy: { ...raw, rule_ids, evidence_ids, summary, missing_evidence: raw.missing_evidence.slice(0, 4) },

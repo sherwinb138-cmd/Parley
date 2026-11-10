@@ -55,6 +55,12 @@ expect("drops a rule id that is not in the rules brief (R42)", policy.policy.rul
 expect("drops a fake evidence id from the policy check (E77)", policy.policy.evidence_ids.join() === "E3");
 expect("removes a fake evidence id from the summary (E88)", !policy.policy.summary.includes("E88") && policy.policy.summary.includes("[E3]"));
 
+const grouped = validatePolicy(
+  { complaint_type: "item_not_received", rule_ids: ["R2"], implication: "For cases like this, R2 applies.", evidence_ids: ["E3"], missing_evidence: [], summary: "The buyer reports no delivery [E4, E5, E88]. Nothing else is on file [E77, E99]." },
+  SAMPLE_EVIDENCE
+);
+expect("checks grouped evidence ids like [E4, E5, E88]", grouped.policy.summary === "The buyer reports no delivery [E4, E5]. Nothing else is on file.", grouped.policy.summary);
+
 const predicting = validatePolicy(
   { complaint_type: "item_not_received", rule_ids: ["R2"], implication: "PayPal will rule for the buyer.", evidence_ids: ["E3"], missing_evidence: [], summary: "Summary [E3]." },
   SAMPLE_EVIDENCE
