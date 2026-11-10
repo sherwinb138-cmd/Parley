@@ -180,12 +180,12 @@ async function main() {
     const body: any = amount
       ? {
           note: "Both sides agreed in Parley to a partial refund.",
-          accept_claim_type: "PARTIAL_REFUND",
+          accept_claim_type: process.argv[5] || "PARTIAL_REFUND",
           refund_amount: { currency_code: "USD", value: amount },
         }
       : { note: "Seller agreed in Parley to a full refund.", accept_claim_type: "REFUND" };
     const r = await call(token, "POST", `/v1/customer/disputes/${arg}/accept-claim`, body);
-    log(`accept-claim (${amount ? "PARTIAL_REFUND $" + amount : "full REFUND"})`, r);
+    log(`accept-claim (${amount ? (process.argv[5] || "PARTIAL_REFUND") + " $" + amount : "full REFUND"})`, r);
     for (let i = 0; i < 5; i++) {
       await new Promise((res) => setTimeout(res, 3000));
       const poll = await call(token, "GET", `/v1/customer/disputes/${arg}`);
