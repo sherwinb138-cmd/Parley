@@ -1,6 +1,6 @@
 // The one place that picks the AI model. Everything else calls askModel() and never names a provider.
 //
-//   AI_PROVIDER=google  -> Gemini (hosted demo). Tries MODEL_SMART, then MODEL_FALLBACK if it is busy.
+//   AI_PROVIDER=google  -> Gemini (hosted demo). Tries MODEL_SMART, then MODEL_FALLBACK; if both are busy it waits and tries again.
 //   AI_PROVIDER=ollama  -> a model running on this computer through Ollama (for local development).
 //
 // Every call must return data in a fixed shape (a zod schema), so plain code can check the answer.
@@ -43,26 +43,40 @@ export async function askModel<T>(opts: {
   for (const img of opts.images || []) content.push({ type: "file", mediaType: img.mediaType, data: img.data });
   const messages: ModelMessage[] = [{ role: "user", content }];
 
+  // Free-tier models are sometimes "busy". Go through the models up to three times, pausing in between.
   let lastError: unknown;
-  for (const c of candidates()) {
-    const started = Date.now();
-    try {
-      const result = await generateText({
-        model: c.model,
-        system: opts.system,
-        messages,
-        output: Output.object({ schema: opts.schema }),
-        temperature: 0,
-        maxRetries: 1,
-        abortSignal: AbortSignal.timeout(opts.timeoutMs ?? 60_000),
-      });
-      const ms = Date.now() - started;
-      console.log(`[ai] ${opts.label} answered by ${c.name} in ${ms} ms`);
-      return { data: result.output as T, model: c.name, ms };
-    } catch (e) {
-      lastError = e;
-      console.error(`[ai] ${opts.label} failed on ${c.name} after ${Date.now() - started} ms: ${(e as Error).message.slice(0, 200)}`);
+  for (let round = 1; round <= 3; round++) {
+    for (const c of candidates()) {
+      const started = Date.now();
+      try {
+        const result = await generateText({
+          model: c.model,
+          system: opts.system,
+          messages,
+          output: Output.object({ schema: opts.schema }),
+          temperature: 0,
+          maxRetries: 1,
+          abortSignal: AbortSignal.timeout(opts.timeoutMs ?? 60_000),
+        });
+        const ms = Date.now() - started;
+        console.log(`[ai] ${opts.label} answered by ${c.name} in ${ms} ms (round ${round})`);
+        return { data: result.output as T, model: c.name, ms };
+      } catch (e) {
+        lastError = e;
+        console.error(`[ai] ${opts.label} failed on ${c.name} after ${Date.now() - started} ms: ${(e as Error).message.slice(0, 200)}`);
+      }
     }
+    // Only a "busy" answer is worth waiting for. Any other failure (a timeout, a bad key) will not fix itself.
+    if (!isBusy(lastError) || round === 3) break;
+    await new Promise((resolve) => setTimeout(resolve, round * 6_000));
+  }
+  if (isBusy(lastError)) {
+    throw new Error("The AI model is busy right now (this demo uses a free tier). Nothing is wrong with the case file. Please try again in a minute.");
   }
   throw new Error(`The AI model could not answer (${opts.label}): ${(lastError as Error)?.message?.slice(0, 200) || "unknown error"}`);
+}
+
+/** True when the model's error means "too many people are using me", which usually clears within a minute. */
+export function isBusy(e: unknown): boolean {
+  return /high demand|overloaded|unavailable|rate limit|quota|resource_exhausted|\b(429|503)\b/i.test((e as Error)?.message || "");
 }

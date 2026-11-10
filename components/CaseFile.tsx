@@ -33,7 +33,7 @@ export function CaseFile({ bundle, role, onChanged }: { bundle: CaseBundle; role
                 className="mt-3 max-h-64 rounded-lg border border-stone-200 object-contain"
               />
             )}
-            {e.body && <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-stone-700">{e.body}</p>}
+            <Body text={e.body} />
             <p className="mt-2 font-mono text-[11px] text-stone-400" title={e.sha256}>
               fingerprint {e.sha256.slice(0, 16)}…
             </p>
@@ -45,6 +45,27 @@ export function CaseFile({ bundle, role, onChanged }: { bundle: CaseBundle; role
         <AddEvidence caseId={bundle.case.id} role={role} onAdded={onChanged} />
       )}
     </section>
+  );
+}
+
+const PHOTO_MARK = "AI description of photo:";
+
+/** Shows the text of an evidence item. For a photo, the uploader's own words and the AI's reading are kept visibly apart. */
+function Body({ text }: { text: string | null }) {
+  if (!text) return null;
+  const at = text.indexOf(PHOTO_MARK);
+  const own = (at === -1 ? text : text.slice(0, at)).trim();
+  const ai = at === -1 ? "" : text.slice(at + PHOTO_MARK.length).trim();
+  return (
+    <>
+      {own && <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-stone-700">{own}</p>}
+      {ai && (
+        <div className="mt-2 rounded-lg border border-dashed border-stone-300 bg-stone-50 p-3">
+          <p className="text-xs font-medium text-stone-500">AI description of photo. What a model sees in the image, not a verified fact. The photo itself is the evidence.</p>
+          <p className="mt-1 text-sm leading-relaxed text-stone-700">{ai}</p>
+        </div>
+      )}
+    </>
   );
 }
 

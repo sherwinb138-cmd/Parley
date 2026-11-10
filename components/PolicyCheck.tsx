@@ -3,7 +3,18 @@
 // and what evidence is missing. It is never a prediction of PayPal's decision.
 import type { CaseBundle } from "@/lib/case/types";
 import { ruleById } from "@/lib/ai/rules";
-import { EvidenceId } from "./ui";
+import { EvidenceId, PAYPAL_RULE_PAGES } from "./ui";
+
+// The reason the buyer picked on PayPal, next to what the buyer's own words are about.
+const REASON_TO_TYPE: Record<string, string> = {
+  MERCHANDISE_OR_SERVICE_NOT_RECEIVED: "item_not_received",
+  MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED: "not_as_described",
+};
+const TYPE_LABEL: Record<string, string> = {
+  item_not_received: "an item that did not arrive",
+  not_as_described: "an item that differs from its description",
+  changed_mind: "a change of mind about the purchase",
+};
 
 export function PolicyCheck({ bundle }: { bundle: CaseBundle }) {
   const p = bundle.policy;
@@ -17,6 +28,13 @@ export function PolicyCheck({ bundle }: { bundle: CaseBundle }) {
 
       {p.summary && <p className="text-sm leading-relaxed text-stone-800">{p.summary}</p>}
 
+      {p.complaint_type && TYPE_LABEL[p.complaint_type] && REASON_TO_TYPE[bundle.case.reason] && REASON_TO_TYPE[bundle.case.reason] !== p.complaint_type && (
+        <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+          The reason chosen on PayPal and the buyer&apos;s own words point to different things. In the evidence, the buyer describes{" "}
+          {TYPE_LABEL[p.complaint_type]}. The rules and options below follow the buyer&apos;s words. Both sides can check this against the case file.
+        </p>
+      )}
+
       <div className="flex flex-col gap-2">
         {p.rule_ids.map((id) => {
           const rule = ruleById(id);
@@ -28,7 +46,12 @@ export function PolicyCheck({ bundle }: { bundle: CaseBundle }) {
                 {rule.title}
               </summary>
               <p className="mt-2 text-sm text-stone-700">{rule.text}</p>
-              <p className="mt-1 text-xs text-stone-500">Source: PayPal {rule.source === "buyer-protection" ? "Purchase Protection" : "Seller Protection"} page</p>
+              <p className="mt-1 text-xs text-stone-500">
+                Source:{" "}
+                <a href={PAYPAL_RULE_PAGES[rule.source].url} target="_blank" rel="noreferrer" className="text-blue-800 underline underline-offset-2">
+                  {PAYPAL_RULE_PAGES[rule.source].name}
+                </a>
+              </p>
             </details>
           );
         })}
@@ -50,6 +73,17 @@ export function PolicyCheck({ bundle }: { bundle: CaseBundle }) {
           </ul>
         </div>
       )}
+
+      <p className="text-xs text-stone-600">
+        Read the rules yourself on PayPal:{" "}
+        {Object.values(PAYPAL_RULE_PAGES).map((page, i) => (
+          <span key={page.url}>
+            {i > 0 && " · "}
+            <a href={page.url} target="_blank" rel="noreferrer" className="text-blue-800 underline underline-offset-2">{page.name}</a>
+          </span>
+        ))}
+        . The rule texts above are Parley&apos;s short wording of those pages (read 10 Nov 2026).
+      </p>
 
       {p.checker && (
         <p className="border-t border-blue-200 pt-3 text-xs text-stone-500">

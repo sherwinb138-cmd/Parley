@@ -84,4 +84,8 @@ export type CaseBundle = {
   policy: PolicyCheckRow | null;
   fingerprint: string;
   allowed: string[]; // actions PayPal allows right now on the dispute
+  offer: OfferState; // the latest refund offer on the PayPal dispute, if any
 };
+
+/** Where the seller's latest refund offer stands on PayPal. Read from PayPal's own offer history. */
+export type OfferState = { state: "none" | "pending" | "accepted" | "declined"; amount: number | null };

@@ -299,7 +299,14 @@ _Update after each session: what works, what's broken, what's next._
   - Rules R1 to R9 in `lib/ai/rules.ts` come from PayPal's Purchase Protection and Seller Protection pages (read 10 Nov).
   - `policy_checks` gained `complaint_type` and `checker` columns (see `supabase/schema.sql`).
   - `npm run test:checker` proves the checker without any AI; `npm run test:ai [ollama]` runs the pipeline on a sample case.
-- **Next:** run the two tests on the laptop (Level 7), then Level 8: offer, agree and settle actions on the buyer and seller screens.
+- **Level 7 done (Tue 10 Nov, 19:15).** Gemini pipeline passes on the laptop and on the hosted app (real dispute `PP-R-QEG-10198028`: 2 claims, 4 quotes verified, Policy check R2/R1/R9, options $35 / $17.50). Qwen `qwen3.5:4b` timed out (over 5 min) on the laptop; parked. Free-tier Gemini is sometimes "busy": `askModel` now goes through both models up to three times with pauses.
+- **Level 8 built (Tue 10 Nov, 22:30), not yet clicked against PayPal.**
+  - `lib/case/actions.ts`: `agree` (buyer; saved with the case-file fingerprint; moves no money), `sendOffer` (seller; `make-offer` partial `REFUND`, message in the note), `settleFullRefund` (seller; needs the buyer's agreement to "full"; `accept-claim` `REFUND`). Each re-reads the dispute's `links` and `allowed_response_options` first, respects `MAX_OFFER_USD`, refuses replays and resolved cases, and runs one at a time per case.
+  - Routes `agree`, `offer`, `settle`; buttons in `components/Options.tsx`. The buyer can also say "I would accept this" on a partial option; the seller then sends the offer and the buyer accepts on PayPal.
+  - Escalation is a link to PayPal's Resolution Center (no `escalate` API call).
+  - Policy check links to PayPal's two protection pages, and shows a note when the reason chosen on PayPal differs from the complaint the buyer describes. The case file shows a photo's AI description in its own labelled box.
+  - Open question: `PP-R-QEG-10198028` has read `UNDER_REVIEW` for hours (possibly since tracking was added). If PayPal's links lack `make_offer` / `accept_claim`, the seller buttons show "PayPal does not allow this step right now". Test on a fresh dispute with no seller action first.
+- **Next:** Sherwin clicks through Level 8 on the hosted app (agree, offer, accept on PayPal; agree, confirm full refund). Then Level 9: three demo cases, precomputed analyses, replay, judge button.
 
 ## 11. Changes from the design debate (9 Nov)
 

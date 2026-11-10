@@ -1,5 +1,5 @@
 "use client";
-// One case, as seen by the buyer or the seller. Both see the same facts; later levels add each side's actions.
+// One case, as seen by the buyer or the seller. Both see the same facts; each side gets its own buttons under "Ways to settle".
 // It reloads from PayPal every 15 seconds so new messages, offers and status changes appear by themselves.
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -28,7 +28,7 @@ export function CaseView({ caseId, role }: { caseId: string; role: Party }) {
       const res = await fetch(`/api/cases/${caseId}/analyze${force ? "?force=1" : ""}`, { method: "POST" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "The analysis failed.");
-      setBundle((prev) => ({ ...data, allowed: prev?.allowed || [] }));
+      setBundle(data);
     } catch (e) {
       setAnalyzeError((e as Error).message);
     } finally {
@@ -104,7 +104,7 @@ export function CaseView({ caseId, role }: { caseId: string; role: Party }) {
 
       <PolicyCheck bundle={bundle} />
       <ClaimMap bundle={bundle} />
-      <Options bundle={bundle} />
+      <Options bundle={bundle} role={role} onBundle={setBundle} />
       <CaseFile bundle={bundle} role={role} onChanged={load} />
     </Shell>
   );

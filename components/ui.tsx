@@ -37,3 +37,10 @@ export function SourceBadge({ source }: { source: EvidenceSource }) {
 export function EvidenceId({ id }: { id: string }) {
   return <span className="inline-flex rounded bg-stone-900 px-1.5 py-0.5 font-mono text-xs font-semibold text-white">{id}</span>;
 }
+
+// Where PayPal's own pages live. Sandbox only: this prototype never touches real money.
+export const RESOLUTION_CENTER_URL = "https://www.sandbox.paypal.com/resolutioncenter";
+export const PAYPAL_RULE_PAGES = {
+  "buyer-protection": { name: "PayPal Purchase Protection (buyers)", url: "https://www.paypal.com/us/legalhub/paypal/buyer-protection" },
+  "seller-protection": { name: "PayPal Seller Protection (sellers)", url: "https://www.paypal.com/us/legalhub/paypal/seller-protection" },
+} as const;

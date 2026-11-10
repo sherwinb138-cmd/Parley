@@ -76,7 +76,11 @@ app          the screens the buyer and seller see, and the routes behind the but
 | `app/api/cases/[id]/analyze/route.ts` | The route behind the "Organize the facts" button. |
 | `components/ClaimMap.tsx` | The claim-to-evidence map on screen. |
 | `components/PolicyCheck.tsx` | The Policy check card. |
-| `components/Options.tsx` | The settlement options. |
+| `components/Options.tsx` | The settlement options, with the buyer's and the seller's buttons. |
+| `lib/case/actions.ts` | The three settlement actions: buyer agrees, seller sends an offer, seller confirms a full refund. |
+| `app/api/cases/[id]/agree/route.ts` | The route behind the buyer's "Agree" button. Moves no money. |
+| `app/api/cases/[id]/offer/route.ts` | The route behind the seller's "Send this offer" button. |
+| `app/api/cases/[id]/settle/route.ts` | The route behind the seller's "Confirm full refund" button. |
 | `scripts/fixtures.ts` | A sample case for tests. |
 | `scripts/checker-test.ts` | Tests the checker and pricing with made-up AI answers (`npm run test:checker`). |
 | `scripts/model-test.ts` | Runs the whole AI pipeline on the sample case (`npm run test:ai`). |
