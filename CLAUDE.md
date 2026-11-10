@@ -1,7 +1,7 @@
 # Parley: project context
 
 Read this whole file before every task. It is the source of truth for what we are building and how.
-_Last updated: Mon 9 Nov 2026, after the design debate. Changes are listed in section 11._
+_Last updated: Tue 10 Nov 2026, after the sandbox spike and debate 3. **Section 13 overrides anything earlier that conflicts with it.**_
 
 ## 1. What we are building
 
@@ -44,7 +44,7 @@ Meera runs a fictional Chennai handloom shop selling to US buyers. Her parcel sh
   - no "buyers skip the seller" (75%) statistic as the hook
   - no fee-as-villain lines
   - no "Seller Protection fails Meera"
-- **Say plainly in the video and README:** "In the sandbox, Parley opens the dispute for the demo. In production, Parley activates when a buyer opens a dispute in PayPal."
+- **Say plainly in the video and README:** "Parley activates when a buyer opens a dispute in PayPal. The buyer accepts a partial offer in PayPal itself."
 - **What sets us apart from rival entries** (Settle, forestall, PayGuard AI, Truce, CaseClerk), which are all seller-side and settle outside the dispute:
   - two-sided
   - one shared evidence map
@@ -52,13 +52,15 @@ Meera runs a fictional Chennai handloom shop selling to US buyers. Her parcel sh
 
 ## 2. Core loop (never cut)
 
-1. A dispute is opened on a card-paid sandbox order. In the demo, Parley creates it on the buyer's behalf.
+1. The buyer pays for an order while logged in to PayPal (Visa funding) and opens a dispute in PayPal's Resolution Center. Parley finds the dispute through the Disputes API. Parley never creates disputes.
 2. Parley imports PayPal records (order, capture, tracking, dispute messages) as evidence E1, E2, and so on.
 3. Buyer and seller may upload images as extra evidence. PDFs only if time allows.
 4. One AI model call extracts each party's claims and links each claim to evidence with a quote. This builds the claim-to-evidence map.
 5. The AI model writes the **Policy check**: which published PayPal rule applies (by rule ID), what that rule implies for cases like this, and what evidence is missing.
 6. Code prices 2–3 settlement options. A full refund is always one of them.
-7. The seller sends a partial `REFUND` offer (`make-offer`), the buyer accepts (`accept-offer`), and PayPal shows RESOLVED.
+7. Settlement, two paths:
+   - **Partial option:** the seller sends a partial `REFUND` offer (`make-offer`, with the message inside the offer note), the buyer accepts it in PayPal's Resolution Center, and PayPal shows RESOLVED.
+   - **Full-refund option:** the buyer clicks "Agree" in Parley, the seller confirms, Parley calls `accept-claim` (type `REFUND`), and PayPal shows RESOLVED.
 
 ### The two evidence features
 - **Case file.** A timeline of every evidence item, each with:
@@ -99,18 +101,18 @@ There is **no v6 checkout shop** unless the core is done early. Seed orders thro
 app/
   case/[id]/buyer/page.tsx          buyer view
   case/[id]/seller/page.tsx         seller view
-  api/cases/route.ts                POST: open case on a seeded order -> creates PayPal dispute
+  api/cases/route.ts                POST: import a PayPal dispute (by ID, or newest open) as a Parley case
   api/cases/[id]/route.ts           GET: case + evidence + claims + policy check (+ fresh PayPal status)
   api/cases/[id]/evidence/route.ts  POST: upload image evidence
   api/cases/[id]/analyze/route.ts   POST: run AI pipeline
   api/cases/[id]/offer/route.ts     POST: seller make-offer
-  api/cases/[id]/accept/route.ts    POST: buyer accept-offer
+  api/cases/[id]/agree/route.ts     POST: buyer agrees to an option in Parley
+  api/cases/[id]/settle/route.ts    POST: seller confirms a full refund -> accept-claim
   api/demo/start/route.ts           judge button: new case from seeded order pool
 lib/
   paypal/token.ts                   OAuth token with cached expiry
   paypal/client.ts                  @paypal/paypal-server-sdk client (orders, payments)
-  paypal/assertion.ts               unsigned PayPal-Auth-Assertion JWT
-  paypal/disputes.ts                raw REST: create, get, send-message, make-offer, accept-offer, deny-offer, escalate, provide-evidence, require-evidence, adjudicate
+  paypal/disputes.ts                raw REST: list, get, send-message, make-offer, accept-claim, escalate, provide-evidence
   ai/model.ts                       provider switch: google | ollama
   ai/classify.ts                    complaint -> PayPal reason code
   ai/mapper.ts                      ONE call: claims + links + quotes
@@ -121,7 +123,8 @@ lib/
   settle/price.ts                   deterministic settlement pricing
   db/                               Supabase client + queries
 scripts/
-  spike.ts                          end-to-end dispute lifecycle test
+  spike.ts                          first spike (card order; API dispute creation is refused)
+  spike2.ts                         working spike: order, capture, disputes, offer, accept, status
   seed-orders.ts                    create + capture demo orders (card-paid)
   precompute-analyses.ts            run AI on the 3 demo cases, cache in DB
   model-test.ts                     compare Gemini vs Qwen on one sample case
@@ -279,7 +282,15 @@ Tick these off as you go.
 ### Current status
 _Update after each session: what works, what's broken, what's next._
 
-- Nothing built yet. Spike results go here.
+- **World 1 done (Tue 10 Nov, 13:10).** Spike results, all on the merchant client-credentials token:
+  - ✅ OAuth token; card-paid order in one call (`payment_source.card`); buyer-approved order + capture.
+  - ❌ `POST /v1/customer/disputes` -> 400 "No permissions to set target_client_id" (needs account-manager scopes + buyer consent). Dropped.
+  - ✅ Buyer files in the sandbox Resolution Center; `GET /v1/customer/disputes/{id}` works at once, the list endpoint lags a few minutes.
+  - ✅ `send-message`. It hands the turn to the buyer (`WAITING_FOR_BUYER_RESPONSE`) and removes `make_offer` from the links.
+  - ✅ `make-offer` partial `REFUND` $15 when sent first (status `WAITING_FOR_SELLER_RESPONSE`). Buyer accepted in the Resolution Center; PayPal created a $15 refund transaction.
+  - ❌ `accept-claim` with `PARTIAL_REFUND`, or `REFUND` + amount: `INVALID_ACCEPT_CLAIM_TYPE`. `allowed_response_options` listed only `REFUND`.
+  - ✅ `accept-claim` full `REFUND`: dispute RESOLVED, `RESOLVED_BUYER_FAVOUR`, $40 refunded. (Unclear which call triggered it; re-check during the build. Status may read `UNDER_REVIEW` for a while after any action.)
+- **Next:** World 2, Level 4: scaffold, `lib/paypal`, Supabase tables, health route, Render deploy.
 
 ## 11. Changes from the design debate (9 Nov)
 
@@ -299,3 +310,16 @@ _Update after each session: what works, what's broken, what's next._
 - **Removed:** `@paypal/agent-toolkit`, Groq, tunnels.
 - **Added:** pre-computed demo analyses, health route + keep-alive cron for Supabase, model test tonight.
 - **Privacy note for README:** Gemini's free tier may use inputs to improve Google's products; all demo data is fictional sandbox data.
+
+## 13. Changes from the spike and debate 3 (10 Nov). Overrides earlier sections.
+
+- **Dispute creation:** by the buyer in PayPal's Resolution Center only. Parley imports the dispute. Cut `assertion.ts`, API dispute creation, API `accept-offer`, the `REFUND_WITH_REPLACEMENT` probe.
+- **Turn rule:** `make-offer` must go out before any `send-message`; put the seller's message in the offer note. Always read the dispute's `links` and `allowed_response_options` before acting.
+- **Settlement:** partial options = `make-offer` + buyer accepts on PayPal. Full refund = buyer "Agree" click in Parley (stored with the case-file fingerprint) + seller confirm + `accept-claim` `REFUND`.
+- **Gate:** we are at Tier 2 plus a live full-refund close. Tier 3 would have meant "seller calls fail"; they work.
+- **Orders that can be disputed:** the buyer must pay while logged in to PayPal (approve link), choosing the Visa card. Guest card orders cannot be disputed by the sandbox buyer.
+- **20-day expiry:** inquiry-stage disputes auto-close after 20 days. Make about 20 buyer-paid orders now; **file the judge pool by hand on 30 Nov** so it lasts to 20 Dec. Show a pool counter.
+- **Demo for judges:** default is a replay of three real RESOLVED disputes with cached analyses. Live mode lets a judge play both sides and close with the full-refund path. Labels stay honest: "Buyer agreed in Parley. Seller's refund closes the PayPal dispute." When the pool is empty, say so and show the replay.
+- **Video:** shows the real offer path: seller offers in Parley, buyer accepts on PayPal, RESOLVED.
+- **Network note for Claude Code sessions in the cloud:** the cloud workspace cannot reach PayPal, Supabase or Gemini. Scripts that call them run on the builder's laptop or on Render.
+
