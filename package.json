@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "spike": "tsx scripts/spike2.ts"
+    "spike": "tsx scripts/spike2.ts",
+    "check": "tsx scripts/check.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.114",

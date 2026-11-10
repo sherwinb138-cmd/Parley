@@ -49,6 +49,7 @@ app          the screens the buyer and seller see, and the routes behind the but
 | `app/api/health/route.ts` | A "are you alive?" check that reads the database once. |
 | `app/page.tsx` | The home screen. |
 | `app/layout.tsx`, `app/globals.css` | The frame and base styling shared by every screen. |
+| `scripts/check.ts` | One command (`npm run check`) that tests PayPal, the database and the AI key. |
 | `scripts/spike.ts` | First PayPal test (10 Nov). Kept as a record. |
 | `scripts/spike2.ts` | Second PayPal test: order, capture, disputes, offer, accept, status. |
 | `.github/workflows/keepalive.yml` | The every-2-days ping. |
