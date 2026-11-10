@@ -11,6 +11,7 @@
  *   npx tsx scripts/spike2.ts accept <disputeId> [amount]  seller accepts the claim (partial refund if amount given)
  */
 import { config } from "dotenv";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 config({ path: ".env.local" });
 
 const BASE = process.env.PAYPAL_API_BASE || "https://api-m.sandbox.paypal.com";
@@ -85,14 +86,17 @@ async function main() {
     });
     if (r.status >= 300) return log("Create order FAILED", r);
     const link = r.data.links?.find((l: any) => l.rel === "payer-action" || l.rel === "approve")?.href;
+    writeFileSync(".spike-state.json", JSON.stringify({ orderId: r.data.id }));
     console.log(`\nORDER ID: ${r.data.id}`);
     console.log(`\nBUYER PAY LINK (open in your browser):\n${link}\n`);
     return;
   }
 
   if (cmd === "capture") {
-    if (!arg) return console.log("Usage: capture <orderId>");
-    const r = await call(token, "POST", `/v2/checkout/orders/${arg}/capture`);
+    const orderId =
+      arg || (existsSync(".spike-state.json") ? JSON.parse(readFileSync(".spike-state.json", "utf8")).orderId : "");
+    if (!orderId) return console.log("Usage: capture <orderId>");
+    const r = await call(token, "POST", `/v2/checkout/orders/${orderId}/capture`);
     const cap = r.data.purchase_units?.[0]?.payments?.captures?.[0];
     log("Capture", {
       status: r.status,
@@ -136,13 +140,8 @@ async function main() {
     const before = await call(token, "GET", `/v1/customer/disputes/${arg}`);
     console.log(`\nStatus before: ${before.data.status} | allowed: ${allowedActions(before.data).join(", ")}`);
 
-    const msg = await call(token, "POST", `/v1/customer/disputes/${arg}/send-message`, {
-      message: "Hello, this is Meera Handlooms. We are looking into your order and will propose a fair resolution.",
-    });
-    log("send-message", msg);
-
     const offer = await call(token, "POST", `/v1/customer/disputes/${arg}/make-offer`, {
-      note: "We are sorry about the delay. We would like to offer a partial refund.",
+      note: "Hello, this is Meera Handlooms. We are sorry about the delay and would like to offer a partial refund of $15.",
       offer_amount: { currency_code: "USD", value: "15.00" },
       offer_type: "REFUND",
     });
