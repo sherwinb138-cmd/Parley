@@ -2,14 +2,37 @@
   "name": "parley",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
+  "license": "MIT",
   "scripts": {
-    "spike": "tsx scripts/spike.ts"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "spike": "tsx scripts/spike2.ts"
   },
   "dependencies": {
-    "@types/node": "^26.6.6",
-    "dotenv": "^18.0.10",
-    "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
+    "@ai-sdk/google": "^4.0.114",
+    "@paypal/paypal-server-sdk": "^2.5.0",
+    "@supabase/supabase-js": "^2.119.0",
+    "ai": "^7.0.166",
+    "ai-sdk-ollama": "^4.6.3",
+    "geist": "^1.9.2",
+    "next": "16.4.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "4.3.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv": "^17.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.6",
+    "tailwindcss": "4.3.3",
+    "tsx": "^4.20.0",
+    "typescript": "^5"
   }
 }

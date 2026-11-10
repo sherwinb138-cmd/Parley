@@ -149,3 +149,11 @@ vite.config.ts.timestamp-*
 .turbo
 .env.local
 .spike-state.json
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+# keep the example env file
+!.env.example
