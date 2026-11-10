@@ -222,6 +222,7 @@ Keep a `.env.example` with these keys and empty values. `.env.local` must be in 
 - **On a PayPal error,** log the full response body and `debug_id`, then use `/paypal:explain-error`.
 - **Commit after every working step.** Never commit secrets.
 - **Keep it simple.** No new services, auth systems or abstractions.
+- **Readable for a plug-and-play builder.** Every file starts with a plain-English comment saying what it does. One job per file. Update `PROJECT_MAP.md` in the same commit as any new file.
 - **UI:** clean and calm, shadcn/ui. Both views show the same case data, and the seller view only adds actions.
 - **Rate-limit public endpoints per IP.** Handle loading and error states on every action.
 
