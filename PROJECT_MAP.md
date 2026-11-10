@@ -24,9 +24,11 @@ app          the screens the buyer and seller see, and the routes behind the but
 
 | Folder | What lives here | Status |
 |---|---|---|
-| `app/` | Screens (`page.tsx`) and the server routes behind buttons (`app/api/.../route.ts`) | skeleton |
-| `lib/paypal/` | Everything that talks to PayPal | written |
-| `lib/db/` | Everything that talks to the database (Supabase) | client written |
+| `app/` | Screens (`page.tsx`) and the server routes behind buttons (`app/api/.../route.ts`) | home + case screens |
+| `components/` | Reusable pieces of the screens | case file built |
+| `lib/paypal/` | Everything that talks to PayPal | working |
+| `lib/db/` | Everything that talks to the database (Supabase) | working |
+| `lib/case/` | What a case is: importing it from PayPal, fingerprints, loading it for a screen | built |
 | `lib/ai/` | Everything that talks to the AI model, plus the checker that verifies its answers | not built yet |
 | `lib/settle/` | Plain code that prices the settlement options. No AI. | not built yet |
 | `supabase/` | The database layout, as one SQL file to paste into Supabase | written |
@@ -45,6 +47,22 @@ app          the screens the buyer and seller see, and the routes behind the but
 | `lib/paypal/client.ts` | Orders, payments and tracking, through PayPal's official Server SDK. |
 | `lib/paypal/disputes.ts` | The seller's dispute actions: read, message, offer, full-refund close. |
 | `lib/db/client.ts` | Opens the connection to the database. |
+| `lib/db/cases.ts` | Reads and writes cases, evidence, claims and the saved AI analysis. |
+| `lib/case/types.ts` | The shapes of a case, an evidence item, a claim, a settlement option. |
+| `lib/case/import.ts` | Turns PayPal's records for a dispute into numbered evidence (E1, E2, ...). |
+| `lib/case/fingerprint.ts` | Makes the sha256 fingerprints for evidence and for the whole case file. |
+| `lib/case/bundle.ts` | Loads everything a screen needs for one case, after syncing with PayPal. |
+| `lib/rate-limit.ts` | A per-visitor speed limit for the public routes. |
+| `lib/api.ts` | Turns errors into clean JSON answers for the routes. |
+| `app/api/cases/route.ts` | Lists cases; imports a PayPal dispute as a case. |
+| `app/api/cases/[id]/route.ts` | Returns one full case. |
+| `app/api/cases/[id]/evidence/route.ts` | Lets the buyer or seller add a photo or statement. |
+| `app/api/cases/[id]/evidence/[eid]/file/route.ts` | Opens an uploaded photo through a short-lived private link. |
+| `app/case/[id]/buyer/page.tsx`, `.../seller/page.tsx` | The buyer's and the seller's view of a case. |
+| `components/CaseView.tsx` | One case on screen; refreshes from PayPal every 15 seconds. |
+| `components/CaseFile.tsx` | The evidence timeline and the add-evidence form. |
+| `components/ImportForm.tsx` | The import box on the home screen. |
+| `components/ui.tsx` | Small shared pieces: status chips, badges, formatters. |
 | `supabase/schema.sql` | Creates the tables: cases, evidence, claims, claim links, policy checks. |
 | `app/api/health/route.ts` | A "are you alive?" check that reads the database once. |
 | `app/page.tsx` | The home screen. |

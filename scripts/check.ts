@@ -72,7 +72,7 @@ async function checkAI() {
     return record("Gemini key + model list", false, (e as Error).message);
   }
   for (const envName of ["MODEL_SMART", "MODEL_FALLBACK"]) {
-    const modelId = process.env[envName] || (envName === "MODEL_SMART" ? "gemini-flash-latest" : "gemini-flash-lite-latest");
+    const modelId = process.env[envName] || (envName === "MODEL_SMART" ? "gemini-3.6-flash" : "gemini-3.5-flash-lite");
     try {
       const { generateText } = await import("ai");
       const { google } = await import("@ai-sdk/google");
