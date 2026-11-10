@@ -136,18 +136,28 @@ async function main() {
   }
 
   if (cmd === "offer") {
-    if (!arg) return console.log("Usage: offer <disputeId>");
-    const before = await call(token, "GET", `/v1/customer/disputes/${arg}`);
+    let id = arg;
+    if (!id) {
+      // No ID given: pick the newest dispute that is waiting for the seller.
+      const list = await call(token, "GET", "/v1/customer/disputes?page_size=20");
+      const open = (list.data.items || [])
+        .filter((d: any) => d.status === "WAITING_FOR_SELLER_RESPONSE" || d.status === "OPEN")
+        .sort((a: any, b: any) => (a.create_time < b.create_time ? 1 : -1));
+      if (!open.length) return console.log("\nNo dispute is waiting for the seller yet. Wait two minutes and run this again.");
+      id = open[0].dispute_id;
+      console.log(`\nUsing newest open dispute: ${id}`);
+    }
+    const before = await call(token, "GET", `/v1/customer/disputes/${id}`);
     console.log(`\nStatus before: ${before.data.status} | allowed: ${allowedActions(before.data).join(", ")}`);
 
-    const offer = await call(token, "POST", `/v1/customer/disputes/${arg}/make-offer`, {
+    const offer = await call(token, "POST", `/v1/customer/disputes/${id}/make-offer`, {
       note: "Hello, this is Meera Handlooms. We are sorry about the delay and would like to offer a partial refund of $15.",
       offer_amount: { currency_code: "USD", value: "15.00" },
       offer_type: "REFUND",
     });
     log("make-offer (partial REFUND $15)", offer);
 
-    const after = await call(token, "GET", `/v1/customer/disputes/${arg}`);
+    const after = await call(token, "GET", `/v1/customer/disputes/${id}`);
     console.log(`\nStatus after: ${after.data.status} | allowed: ${allowedActions(after.data).join(", ")}`);
     log("Offer on the dispute", after.data.offer);
     return;
