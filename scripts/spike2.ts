@@ -8,6 +8,7 @@
  *   npx tsx scripts/spike2.ts disputes            list disputes, show the newest in full
  *   npx tsx scripts/spike2.ts offer <disputeId>   send a message + a partial refund offer
  *   npx tsx scripts/spike2.ts status <disputeId>  show the dispute's status and allowed actions
+ *   npx tsx scripts/spike2.ts accept <disputeId> [amount]  seller accepts the claim (partial refund if amount given)
  */
 import { config } from "dotenv";
 config({ path: ".env.local" });
@@ -169,7 +170,32 @@ async function main() {
     return;
   }
 
-  console.log("Commands: order | capture <orderId> | disputes | offer <disputeId> | status <disputeId>");
+  if (cmd === "accept") {
+    // Seller accepts the claim. With an amount: partial refund. Without: full refund.
+    if (!arg) return console.log("Usage: accept <disputeId> [amount]");
+    const amount = process.argv[4];
+    const before = await call(token, "GET", `/v1/customer/disputes/${arg}`);
+    console.log(`\nStatus before: ${before.data.status} | stage: ${before.data.dispute_life_cycle_stage} | allowed: ${allowedActions(before.data).join(", ")}`);
+    log("allowed_response_options", before.data.allowed_response_options);
+    const body: any = amount
+      ? {
+          note: "Both sides agreed in Parley to a partial refund.",
+          accept_claim_type: "PARTIAL_REFUND",
+          refund_amount: { currency_code: "USD", value: amount },
+        }
+      : { note: "Seller agreed in Parley to a full refund.", accept_claim_type: "REFUND" };
+    const r = await call(token, "POST", `/v1/customer/disputes/${arg}/accept-claim`, body);
+    log(`accept-claim (${amount ? "PARTIAL_REFUND $" + amount : "full REFUND"})`, r);
+    for (let i = 0; i < 5; i++) {
+      await new Promise((res) => setTimeout(res, 3000));
+      const poll = await call(token, "GET", `/v1/customer/disputes/${arg}`);
+      console.log(`Poll ${i + 1}: status = ${poll.data.status} | outcome = ${JSON.stringify(poll.data.dispute_outcome)}`);
+      if (poll.data.status === "RESOLVED") break;
+    }
+    return;
+  }
+
+  console.log("Commands: order | capture <orderId> | disputes | offer <disputeId> | status <disputeId> | accept <disputeId> [amount]");
 }
 
 main().catch((e) => {
