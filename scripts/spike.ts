@@ -58,12 +58,14 @@ async function getToken(): Promise<string> {
 }
 
 async function createAndCaptureOrder(token: string): Promise<{ orderId: string; captureId: string }> {
-  // Create order
-  const createRes = await fetch(`${BASE}/v2/checkout/orders`, {
+  // One call: create the order AND pay it with a sandbox test card.
+  // With intent CAPTURE and payment_source.card, PayPal captures immediately.
+  const res = await fetch(`${BASE}/v2/checkout/orders`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
+      "PayPal-Request-Id": `parley-spike-${Date.now()}`,
     },
     body: JSON.stringify({
       intent: "CAPTURE",
@@ -73,56 +75,28 @@ async function createAndCaptureOrder(token: string): Promise<{ orderId: string; 
           description: "Parley spike test - handwoven scarf",
         },
       ],
-    }),
-  });
-  const order = await createRes.json();
-  log("2a. Create order", { status: createRes.status, id: order.id, debug_id: order.debug_id });
-  if (!createRes.ok) throw new Error("Failed to create order");
-
-  // NOTE: In real checkout, the buyer approves via redirect/card fields.
-  // For the spike we need a captured, card-paid order. This requires either:
-  //  (a) a client-side card-fields approval flow, or
-  //  (b) using a sandbox test card via the orders API 'payment_source.card' field.
-  // We try (b) here for an automatable, scriptable test.
-  const confirmRes = await fetch(`${BASE}/v2/checkout/orders/${order.id}/confirm-payment-source`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
       payment_source: {
         card: {
-          number: "4032039194315308", // PayPal sandbox test Visa
-          expiry: "2027-12",
-          security_code: "123",
+          number: process.env.TEST_CARD_NUMBER || "4111111111111111",
+          expiry: process.env.TEST_CARD_EXPIRY || "2030-01",
+          security_code: process.env.TEST_CARD_CVV || "123",
           name: "Test Buyer",
+          billing_address: {
+            address_line_1: "1 Main St",
+            admin_area_2: "San Jose",
+            admin_area_1: "CA",
+            postal_code: "95131",
+            country_code: "US",
+          },
         },
       },
     }),
   });
-  const confirm = await confirmRes.json();
-  log("2b. Confirm payment source (card)", { status: confirmRes.status, status_field: confirm.status, debug_id: confirm.debug_id });
+  const order = await res.json();
+  log("2. Create + pay order by card (FULL response)", { status: res.status, body: order });
+  if (!res.ok) throw new Error("Card-paid order failed - see the full response above");
 
-  const captureRes = await fetch(`${BASE}/v2/checkout/orders/${order.id}/capture`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-  const capture = await captureRes.json();
-  log("2c. Capture order", {
-    status: captureRes.status,
-    order_status: capture.status,
-    debug_id: capture.debug_id,
-    purchase_units: capture.purchase_units,
-  });
-  if (!captureRes.ok) throw new Error("Failed to capture order");
-
-  const captureId =
-    capture.purchase_units?.[0]?.payments?.captures?.[0]?.id;
-
+  const captureId = order.purchase_units?.[0]?.payments?.captures?.[0]?.id;
   return { orderId: order.id, captureId };
 }
 
@@ -235,7 +209,11 @@ async function main() {
   console.log("Parley spike test starting...\n");
 
   const token = await getToken();
-  const { orderId, captureId } = await createAndCaptureOrder(token);
+  const existing = process.argv[2];
+  const { captureId } = existing
+    ? { captureId: existing }
+    : await createAndCaptureOrder(token);
+  console.log(`\nUsing capture ID: ${captureId}`);
 
   if (!captureId) {
     console.log("\n❌ No capture ID — cannot proceed to dispute creation. TIER 3.");
