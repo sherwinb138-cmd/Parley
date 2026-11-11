@@ -16,7 +16,7 @@ _Last updated: Tue 10 Nov 2026, after the sandbox spike and debate 3. **Section 
 **Hackathon:**
 - PayPal AI Hackathon on Devpost.
 - Deadline: Thu 12 Nov 2026, 12:00pm PST (Fri 13 Nov, 01:30 IST). Our target: **submit by Thu 12 Nov, 20:00 IST.**
-- Solo builder in India, vibe-coding with Claude Code.
+- Solo builder, working with Claude Code.
 
 **Judging:**
 - Five criteria, scored 1–5 with equal weight: Tech Implementation, Design, Potential Impact, Innovation, Presentation. Ties go to Tech Implementation.
@@ -314,7 +314,7 @@ _Update after each session: what works, what's broken, what's next._
 - **Level 9 built (Wed 11 Nov, 13:00), not yet run.** `npm run demo:save <case IDs>` (laptop) marks RESOLVED cases as read-only replays with a saved analysis. Replays are never synced and never re-analyzed. Home screen: "Finished cases" (replays), "Live cases" with "Start a live case" (`/api/demo/start`, counts open inquiry-stage disputes), then the import box.
 - **Debate 4 (Wed 11 Nov): the lead demo case becomes "wrong colour with a buyer photo"**, settled by a partial offer (a return from the US to India costs more than the item). Condition: photo upload must first pass on the hosted app; if not, the lead stays "shipped, never delivered". Keep "shipped, never delivered" as the short second example. No login page: say plainly that the prototype lets one person play both sides and that a real version would use the PayPal login. Never say Parley is part of PayPal.
 - **Level 10 polish built (Wed 11 Nov, 19:30).** Case screen in story order: "In short" sentence + summary, three-step strip, claims and evidence (with the photo inside the map), Policy check with plain-language rule titles (first rule open), options, case file. The "In short" sentence is a new AI field (`in_short`), checked for predictions, saved as the first line of `policy_checks.summary` (`In short: …\n`), so no database change. Home screen: one-line story per case and the prototype note. `npm run demo:save fresh <ids>` re-runs the AI.
-- **Next:** Sherwin creates the lead case (fresh indigo sari order, "not as described", buyer photo), settles it by offer, then `demo:save fresh` on the finished cases. Then recordings, video, README, submit Thu 20:00.
+- **Next:** the builder creates the lead case (fresh indigo sari order, "not as described", buyer photo), settles it by offer, then `demo:save fresh` on the finished cases. Then recordings, video, README, submit Thu 20:00.
 
 ## 11. Changes from the design debate (9 Nov)
 
