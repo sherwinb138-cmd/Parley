@@ -8,7 +8,7 @@ import { CaseFile } from "./CaseFile";
 import { ClaimMap } from "./ClaimMap";
 import { Options } from "./Options";
 import { PolicyCheck } from "./PolicyCheck";
-import { StatusChip, usd } from "./ui";
+import { StatusChip, splitSummary, usd } from "./ui";
 
 const REASON: Record<string, string> = {
   MERCHANDISE_OR_SERVICE_NOT_RECEIVED: "Item not received",
@@ -108,11 +108,47 @@ export function CaseView({ caseId, role }: { caseId: string; role: Party }) {
         );
       })()}
 
-      <PolicyCheck bundle={bundle} />
-      <ClaimMap bundle={bundle} />
-      <Options bundle={bundle} role={role} onBundle={setBundle} />
+      {bundle.policy && <Overview summary={bundle.policy.summary} />}
+      <div id="facts" className="scroll-mt-6"><ClaimMap bundle={bundle} /></div>
+      <div id="rules" className="scroll-mt-6"><PolicyCheck bundle={bundle} /></div>
+      <div id="settle" className="scroll-mt-6"><Options bundle={bundle} role={role} onBundle={setBundle} /></div>
       <CaseFile bundle={bundle} role={role} onChanged={load} />
     </Shell>
+  );
+}
+
+/** The first thing a reader sees after the analysis: one sentence, a short neutral summary, and the three steps of the page. */
+function Overview({ summary }: { summary: string | null }) {
+  const { inShort, rest } = splitSummary(summary);
+  const steps = [
+    ["#facts", "1", "The same facts", "What each side says, tied to evidence"],
+    ["#rules", "2", "What the rules say", "The PayPal rule that applies"],
+    ["#settle", "3", "Ways to settle", "Options both sides can act on"],
+  ];
+  return (
+    <section className="flex flex-col gap-4">
+      <div className="rounded-xl border border-stone-200 bg-white p-5">
+        {inShort && (
+          <p className="text-lg font-medium leading-snug">
+            <span className="mr-2 text-sm font-semibold uppercase tracking-wide text-stone-500">In short</span>
+            {inShort}
+          </p>
+        )}
+        {rest && <p className={`text-sm leading-relaxed text-stone-700 ${inShort ? "mt-3" : ""}`}>{rest}</p>}
+        <p className="mt-3 text-xs text-stone-500">Written by AI from the case file for both sides. It is not PayPal&apos;s decision.</p>
+      </div>
+      <nav aria-label="Sections of this page" className="grid gap-2 sm:grid-cols-3">
+        {steps.map(([href, n, title, sub]) => (
+          <a key={href} href={href} className="flex items-start gap-3 rounded-xl border border-stone-200 bg-white p-3 hover:border-stone-400">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-stone-900 text-xs font-semibold text-white">{n}</span>
+            <span className="min-w-0">
+              <span className="block text-sm font-medium">{title}</span>
+              <span className="block text-xs text-stone-500">{sub}</span>
+            </span>
+          </a>
+        ))}
+      </nav>
+    </section>
   );
 }
 

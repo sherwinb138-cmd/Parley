@@ -96,7 +96,7 @@ export function validatePolicy(raw: RawPolicy, evidence: EvidenceRow[]): PolicyC
   });
   if (!evidence_ids.length) problems.push("List at least one evidence id the implication relies on.");
 
-  if (PREDICTION.test(raw.implication) || PREDICTION.test(raw.summary)) {
+  if (PREDICTION.test(raw.implication) || PREDICTION.test(raw.summary) || PREDICTION.test(raw.in_short || "")) {
     problems.push("Do not predict PayPal's decision. Say what the rule implies for cases like this instead.");
   }
 
@@ -111,7 +111,15 @@ export function validatePolicy(raw: RawPolicy, evidence: EvidenceRow[]): PolicyC
     .replace(/ {2,}/g, " ");
 
   return {
-    policy: { ...raw, rule_ids, evidence_ids, summary, missing_evidence: raw.missing_evidence.slice(0, 4) },
+    policy: {
+      ...raw,
+      rule_ids,
+      evidence_ids,
+      summary,
+      // One line only, and no ids: it is the sentence people read first.
+      in_short: (raw.in_short || "").replace(/\s+/g, " ").replace(/\[[^\]]*\]/g, "").trim().slice(0, 240),
+      missing_evidence: raw.missing_evidence.slice(0, 4),
+    },
     problems,
   };
 }

@@ -38,6 +38,24 @@ export function EvidenceId({ id }: { id: string }) {
   return <span className="inline-flex rounded bg-stone-900 px-1.5 py-0.5 font-mono text-xs font-semibold text-white">{id}</span>;
 }
 
+/** An evidence ID with its name next to it, so nobody has to look up what "E3" is. Clicking jumps to the item. */
+export function EvidenceChip({ id, title }: { id: string; title?: string }) {
+  return (
+    <a href={`#evidence-${id}`} className="inline-flex max-w-full items-center gap-1.5 rounded bg-stone-100 py-0.5 pl-0.5 pr-2 text-xs text-stone-700 hover:bg-stone-200">
+      <EvidenceId id={id} />
+      {title && <span className="truncate">{title}</span>}
+    </a>
+  );
+}
+
+/** Splits a saved summary into its "In short" sentence (first line, if present) and the rest. */
+export function splitSummary(summary: string | null): { inShort: string | null; rest: string } {
+  const text = summary || "";
+  if (!text.startsWith("In short: ")) return { inShort: null, rest: text };
+  const cut = text.indexOf("\n");
+  return cut === -1 ? { inShort: text.slice(10), rest: "" } : { inShort: text.slice(10, cut), rest: text.slice(cut + 1) };
+}
+
 // Where PayPal's own pages live. Sandbox only: this prototype never touches real money.
 export const RESOLUTION_CENTER_URL = "https://www.sandbox.paypal.com/resolutioncenter";
 export const PAYPAL_RULE_PAGES = {

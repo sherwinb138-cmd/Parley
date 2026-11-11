@@ -47,6 +47,7 @@ const policy = validatePolicy(
     implication: "For cases like this, R2 asks the seller for proof of delivery.",
     evidence_ids: ["E3", "E77"],
     missing_evidence: ["A carrier page showing delivered status"],
+    in_short: "The seller needs proof of delivery, and none is on file.",
     summary: "The buyer reports no delivery [E5]. Tracking shows shipped only [E3] [E88].",
   },
   SAMPLE_EVIDENCE
@@ -56,16 +57,22 @@ expect("drops a fake evidence id from the policy check (E77)", policy.policy.evi
 expect("removes a fake evidence id from the summary (E88)", !policy.policy.summary.includes("E88") && policy.policy.summary.includes("[E3]"));
 
 const grouped = validatePolicy(
-  { complaint_type: "item_not_received", rule_ids: ["R2"], implication: "For cases like this, R2 applies.", evidence_ids: ["E3"], missing_evidence: [], summary: "The buyer reports no delivery [E4, E5, E88]. Nothing else is on file [E77, E99]." },
+  { complaint_type: "item_not_received", rule_ids: ["R2"], implication: "For cases like this, R2 applies.", evidence_ids: ["E3"], missing_evidence: [], in_short: "Proof of delivery is not on file.", summary: "The buyer reports no delivery [E4, E5, E88]. Nothing else is on file [E77, E99]." },
   SAMPLE_EVIDENCE
 );
 expect("checks grouped evidence ids like [E4, E5, E88]", grouped.policy.summary === "The buyer reports no delivery [E4, E5]. Nothing else is on file.", grouped.policy.summary);
 
 const predicting = validatePolicy(
-  { complaint_type: "item_not_received", rule_ids: ["R2"], implication: "PayPal will rule for the buyer.", evidence_ids: ["E3"], missing_evidence: [], summary: "Summary [E3]." },
+  { complaint_type: "item_not_received", rule_ids: ["R2"], implication: "PayPal will rule for the buyer.", evidence_ids: ["E3"], missing_evidence: [], in_short: "Proof of delivery is not on file.", summary: "Summary [E3]." },
   SAMPLE_EVIDENCE
 );
 expect("flags a prediction of PayPal's decision", predicting.problems.some((p) => p.startsWith("Do not predict")));
+
+const predictingShort = validatePolicy(
+  { complaint_type: "item_not_received", rule_ids: ["R2"], implication: "For cases like this, R2 applies.", evidence_ids: ["E3"], missing_evidence: [], in_short: "PayPal will refund the buyer [E3].", summary: "Summary [E3]." },
+  SAMPLE_EVIDENCE
+);
+expect("flags a prediction inside the 'In short' sentence", predictingShort.problems.some((p) => p.startsWith("Do not predict")));
 
 const opts = priceOptions("item_not_received", 40);
 expect("pricing always includes a full refund", opts[0].id === "full" && opts[0].amount === 40 && opts[0].path === "accept_claim");

@@ -8,12 +8,15 @@ export function ClaimMap({ bundle }: { bundle: CaseBundle }) {
   const { claims, links, evidence } = bundle;
   if (!claims.length) return null;
   const titleOf = (id: string) => evidence.find((e) => e.id === id)?.title || id;
+  const photoOf = (id: string) => (evidence.find((e) => e.id === id)?.file_path ? `/api/cases/${bundle.case.id}/evidence/${id}/file` : null);
 
   return (
     <section className="flex flex-col gap-4">
       <div>
         <h2 className="text-lg font-semibold">Claims and their evidence</h2>
-        <p className="text-sm text-stone-600">Organized by AI, then checked by code: every quote below was found word for word in the evidence it points to.</p>
+        <p className="text-sm text-stone-600">
+          Organized by AI, then checked by code: every quote below was found word for word in the evidence it points to. E1, E2 and so on are the numbered items in the case file at the bottom of this page.
+        </p>
       </div>
       {(["buyer", "seller"] as Party[]).map((party) => {
         const mine = claims.filter((c) => c.party === party);
@@ -34,7 +37,7 @@ export function ClaimMap({ bundle }: { bundle: CaseBundle }) {
                       <span className="inline-flex w-fit rounded bg-stone-100 px-2 py-0.5 text-xs font-medium text-stone-600">Unsupported: no evidence on file</span>
                     )}
                     {mineLinks.map((l) => (
-                      <LinkCard key={l.evidence_id} link={l} title={titleOf(l.evidence_id)} />
+                      <LinkCard key={l.evidence_id} link={l} title={titleOf(l.evidence_id)} photo={photoOf(l.evidence_id)} />
                     ))}
                   </div>
                 </div>
@@ -47,7 +50,7 @@ export function ClaimMap({ bundle }: { bundle: CaseBundle }) {
   );
 }
 
-function LinkCard({ link, title }: { link: ClaimLinkRow; title: string }) {
+function LinkCard({ link, title, photo }: { link: ClaimLinkRow; title: string; photo: string | null }) {
   const supports = link.relation === "supports";
   return (
     <a href={`#evidence-${link.evidence_id}`} className="block rounded-lg border border-stone-200 bg-stone-50 p-3 hover:border-stone-400">
@@ -58,8 +61,10 @@ function LinkCard({ link, title }: { link: ClaimLinkRow; title: string }) {
         <EvidenceId id={link.evidence_id} />
         <span className="truncate text-xs text-stone-600">{title}</span>
       </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {photo && <img src={photo} alt={title} className="mt-2 max-h-32 rounded border border-stone-200 object-contain" />}
       {link.quote && <p className="mt-2 border-l-2 border-stone-300 pl-3 text-sm italic text-stone-700">“{link.quote}”</p>}
-      {link.quote_kind === "photo_description" && <p className="mt-1 text-xs text-stone-500">AI description of photo</p>}
+      {link.quote_kind === "photo_description" && <p className="mt-1 text-xs text-stone-500">AI description of photo. What a model sees in the image, not a verified fact.</p>}
     </a>
   );
 }

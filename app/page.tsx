@@ -28,6 +28,9 @@ export default async function Home() {
         <p className="text-lg text-stone-600">
           One shared case file for both sides of a PayPal dispute, with every claim linked to its evidence.
         </p>
+        <p className="text-sm text-stone-500">
+          A prototype of a capability PayPal could add to its Resolution Center, built on PayPal&apos;s sandbox with test money only. Here one person can open both the buyer view and the seller view; in a real version each side would be identified through their PayPal login.
+        </p>
       </section>
 
       {loadError && <p className="text-sm text-red-700">{loadError}</p>}
@@ -54,6 +57,21 @@ export default async function Home() {
   );
 }
 
+const REASON: Record<string, string> = {
+  MERCHANDISE_OR_SERVICE_NOT_RECEIVED: "Item not received",
+  MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED: "Item not as described",
+};
+
+/** One line that tells what the case was about and how it ended, from PayPal's own outcome. */
+function story(c: CaseRow): string {
+  const about = REASON[c.reason] || "Dispute";
+  if (c.paypal_status !== "RESOLVED") return about;
+  const refunded = Number(c.outcome?.amount_refunded?.value || 0);
+  if (!refunded) return `${about} · closed on PayPal`;
+  if (refunded >= Number(c.amount)) return `${about} · settled by a full refund of ${usd(refunded)}${c.agreed_option === "full" ? ", agreed in Parley" : ""}`;
+  return `${about} · settled by the seller's offer of ${usd(refunded)}, accepted on PayPal`;
+}
+
 function CaseList({ cases }: { cases: CaseRow[] }) {
   if (!cases.length) return null;
   return (
@@ -62,6 +80,7 @@ function CaseList({ cases }: { cases: CaseRow[] }) {
         <li key={c.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-stone-200 bg-white p-4">
           <div className="min-w-0 flex-1">
             <p className="truncate font-medium">{c.item_name || "Order"} · {usd(c.amount)}</p>
+            {story(c) && <p className="text-sm text-stone-600">{story(c)}</p>}
             <p className="font-mono text-xs text-stone-500">{c.paypal_dispute_id}</p>
           </div>
           <StatusChip status={c.paypal_status} />

@@ -11,6 +11,8 @@ import { mapClaims } from "./mapper";
 import { checkPolicy } from "./policy";
 import { validateMap, validatePolicy } from "./validate";
 
+export const IN_SHORT = "In short: ";
+
 export type Analysis = {
   claims: Array<Omit<ClaimRow, "case_id">>;
   links: Array<Omit<ClaimLinkRow, "case_id">>;
@@ -74,7 +76,8 @@ export async function analyzeEvidence(evidence: EvidenceRow[], orderAmount: numb
       implication: policy.policy.implication.trim(),
       evidence_ids: policy.policy.evidence_ids,
       missing_evidence: policy.policy.missing_evidence,
-      summary: policy.policy.summary.trim(),
+      // The "In short" sentence is saved as the first line of the summary, so no database change is needed.
+      summary: `${policy.policy.in_short ? `${IN_SHORT}${policy.policy.in_short}\n` : ""}${policy.policy.summary.trim()}`,
       options,
       model: policyAnswer.model,
       complaint_type: policy.policy.complaint_type,
