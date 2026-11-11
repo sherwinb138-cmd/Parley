@@ -79,7 +79,7 @@ function CaseList({ cases }: { cases: CaseRow[] }) {
       {cases.map((c) => (
         <li key={c.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-stone-200 bg-white p-4">
           <div className="min-w-0 flex-1">
-            <p className="truncate font-medium">{c.item_name || "Order"} · {usd(c.amount)}</p>
+            <p className="font-medium [overflow-wrap:anywhere]">{c.item_name || "Order"} · {usd(c.amount)}</p>
             {story(c) && <p className="text-sm text-stone-600">{story(c)}</p>}
             <p className="font-mono text-xs text-stone-500">{c.paypal_dispute_id}</p>
           </div>

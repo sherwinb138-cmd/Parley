@@ -28,11 +28,11 @@ export function ClaimMap({ bundle }: { bundle: CaseBundle }) {
               const mineLinks = links.filter((l) => l.claim_id === c.id);
               return (
                 <div key={c.id} className="grid gap-3 rounded-xl border border-stone-200 bg-white p-4 md:grid-cols-2">
-                  <p className="text-sm font-medium leading-relaxed">
+                  <p className="min-w-0 text-sm font-medium leading-relaxed [overflow-wrap:anywhere]">
                     <span className="mr-2 font-mono text-xs text-stone-400">{c.id}</span>
                     {c.body}
                   </p>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex min-w-0 flex-col gap-2">
                     {mineLinks.length === 0 && (
                       <span className="inline-flex w-fit rounded bg-stone-100 px-2 py-0.5 text-xs font-medium text-stone-600">Unsupported: no evidence on file</span>
                     )}
@@ -53,7 +53,7 @@ export function ClaimMap({ bundle }: { bundle: CaseBundle }) {
 function LinkCard({ link, title, photo }: { link: ClaimLinkRow; title: string; photo: string | null }) {
   const supports = link.relation === "supports";
   return (
-    <a href={`#evidence-${link.evidence_id}`} className="block rounded-lg border border-stone-200 bg-stone-50 p-3 hover:border-stone-400">
+    <a href={`#evidence-${link.evidence_id}`} className="block min-w-0 rounded-lg border border-stone-200 bg-stone-50 p-3 [overflow-wrap:anywhere] hover:border-stone-400">
       <div className="flex flex-wrap items-center gap-2">
         <span className={`rounded px-1.5 py-0.5 text-xs font-medium ${supports ? "bg-emerald-100 text-emerald-900" : "bg-rose-100 text-rose-900"}`}>
           {supports ? "Supports" : "Contradicts"}

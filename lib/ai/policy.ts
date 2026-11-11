@@ -20,7 +20,7 @@ export const policySchema = z.object({
   missing_evidence: z.array(z.string()).describe("Up to four specific pieces of evidence that are not on file and would change the picture."),
   in_short: z
     .string()
-    .describe("One plain sentence of at most 25 words that a first-time reader understands at once: what the applicable rule asks for and whether that is on file. No rule ids, no evidence ids, no prediction of PayPal's decision."),
+    .describe("One plain sentence of at most 25 words that a first-time reader understands at once: what the applicable rule asks for and whether that is on file. Name evidence by its source (for example \"the buyer's photo shows\" or \"PayPal's tracking record shows\") and never state one side's claim as an established fact. No rule ids, no evidence ids, no prediction of PayPal's decision."),
   summary: z.string().describe("A neutral summary of the case for both parties, three or four plain sentences, mentioning evidence ids in brackets like [E3]."),
 });
 
