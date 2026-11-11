@@ -81,7 +81,13 @@ export function CaseView({ caseId, role }: { caseId: string; role: Party }) {
         {error && <p className="text-sm text-amber-700">Could not refresh from PayPal just now. Showing the saved case file.</p>}
       </header>
 
-      {(() => {
+      {c.is_replay && (
+        <p className="rounded-xl border border-stone-200 bg-white p-4 text-sm text-stone-700">
+          <strong>Replay of a finished case.</strong> This is a real sandbox dispute that was settled through Parley. The analysis below was saved when it ran, and the buttons are switched off.
+        </p>
+      )}
+
+      {!(c.is_replay && bundle.policy) && (() => {
         const stale = bundle.policy && bundle.policy.evidence_fingerprint !== bundle.fingerprint;
         return (
           <section className="flex flex-wrap items-center gap-3 rounded-xl border border-stone-200 bg-white p-4">

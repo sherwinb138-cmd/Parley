@@ -81,6 +81,9 @@ app          the screens the buyer and seller see, and the routes behind the but
 | `app/api/cases/[id]/agree/route.ts` | The route behind the buyer's "Agree" button. Moves no money. |
 | `app/api/cases/[id]/offer/route.ts` | The route behind the seller's "Send this offer" button. |
 | `app/api/cases/[id]/settle/route.ts` | The route behind the seller's "Confirm full refund" button. |
+| `app/api/demo/start/route.ts` | The route behind "Start a live case": counts and opens real open disputes. |
+| `components/DemoStart.tsx` | The "Try a live case" box with its counter. |
+| `scripts/precompute-analyses.ts` | `npm run demo:save`: saves finished disputes as read-only replays with their AI analysis. |
 | `scripts/fixtures.ts` | A sample case for tests. |
 | `scripts/checker-test.ts` | Tests the checker and pricing with made-up AI answers (`npm run test:checker`). |
 | `scripts/model-test.ts` | Runs the whole AI pipeline on the sample case (`npm run test:ai`). |

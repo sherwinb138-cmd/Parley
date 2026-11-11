@@ -32,7 +32,8 @@ export async function loadBundle(caseId: string, opts: { sync?: boolean } = {}):
   if (!caseRow) return null;
 
   const due = Date.now() - (lastSync.get(caseId) || 0) > SYNC_EVERY_MS;
-  if (opts.sync && due) {
+  // A replay is a finished case: nothing on PayPal can change, so it is never synced.
+  if (opts.sync && due && !caseRow.is_replay) {
     try {
       const synced = await syncCaseFromPayPal(caseRow.paypal_dispute_id);
       caseRow = synced.caseRow;

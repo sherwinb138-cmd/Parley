@@ -306,7 +306,13 @@ _Update after each session: what works, what's broken, what's next._
   - Escalation is a link to PayPal's Resolution Center (no `escalate` API call).
   - Policy check links to PayPal's two protection pages, and shows a note when the reason chosen on PayPal differs from the complaint the buyer describes. The case file shows a photo's AI description in its own labelled box.
   - Open question: `PP-R-QEG-10198028` has read `UNDER_REVIEW` for hours (possibly since tracking was added). If PayPal's links lack `make_offer` / `accept_claim`, the seller buttons show "PayPal does not allow this step right now". Test on a fresh dispute with no seller action first.
-- **Next:** Sherwin clicks through Level 8 on the hosted app (agree, offer, accept on PayPal; agree, confirm full refund). Then Level 9: three demo cases, precomputed analyses, replay, judge button.
+- **Level 8 done (Wed 11 Nov, 12:15). Both paths work on the hosted app against PayPal.**
+  - Full refund: `PP-R-QEG-10198028` (table runner, $35). Buyer agreed in Parley, seller confirmed, `accept-claim` closed it.
+  - Offer: `PP-R-HBS-10198765` (tote bag, $30, PayPal reason "not received" but the buyer describes a wrong colour, so the mismatch note shows). Seller sent $12 from Parley, buyer accepted on PayPal, RESOLVED.
+  - **Finding:** when an order has tracking, the buyer's "item not received" flow shows the tracking and then a "Report Issue to PayPal" button, which files a **claim** directly (stage `CHARGEBACK`, no `make_offer`; `PP-R-SSX-10198767` did not even list `accept_claim`). Orders **without tracking**, and "not as described" cases, start at the inquiry stage. For any case that must show an offer, open the dispute before tracking is added.
+  - Seed pay links expire within a day; run `npm run seed create` for fresh ones.
+- **Level 9 built (Wed 11 Nov, 13:00), not yet run.** `npm run demo:save <case IDs>` (laptop) marks RESOLVED cases as read-only replays with a saved analysis. Replays are never synced and never re-analyzed. Home screen: "Finished cases" (replays), "Live cases" with "Start a live case" (`/api/demo/start`, counts open inquiry-stage disputes), then the import box.
+- **Next:** Sherwin runs `demo:save` on the finished cases, settles the $40 sari case (changed my mind), then Level 10 design polish. Feature freeze Wed 20:00.
 
 ## 11. Changes from the design debate (9 Nov)
 

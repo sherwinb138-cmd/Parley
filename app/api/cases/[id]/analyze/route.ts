@@ -15,6 +15,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const { id } = await params;
     if (!/^[0-9a-f-]{36}$/.test(id)) return Response.json({ error: "Case not found." }, { status: 404 });
     const force = new URL(request.url).searchParams.get("force") === "1";
+    const current = await loadBundle(id);
+    if (!current) return Response.json({ error: "Case not found." }, { status: 404 });
+    // A replay keeps its saved analysis, so the demo never waits for the AI model.
+    if (current.case.is_replay && current.policy) return Response.json({ ...current, analysis_run: { reused: true } });
     const run = await analyzeCase(id, { force });
     const bundle = await loadBundle(id);
     return Response.json({ ...bundle, analysis_run: run });
