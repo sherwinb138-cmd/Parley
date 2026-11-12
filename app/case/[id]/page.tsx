@@ -3,7 +3,8 @@
 // In a real version each side would arrive already signed in through PayPal.
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { StatusChip, usd } from "@/components/ui";
+import { Hl, Reveal } from "@/components/Reveal";
+import { StatusChip, TONE, usd } from "@/components/ui";
 import { getCase } from "@/lib/db/cases";
 
 export const dynamic = "force-dynamic";
@@ -21,13 +22,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   const doors = [
     {
-      role: "buyer",
+      role: "buyer" as const,
       who: c.buyer_name || "The buyer",
       title: "Enter as the buyer",
       can: "See the shared case file, add a statement or a photo, and say which option you would accept.",
     },
     {
-      role: "seller",
+      role: "seller" as const,
       who: c.seller_name || "The seller",
       title: "Enter as the seller",
       can: "See the same case file, add a statement or a photo, and send an offer or confirm a refund.",
@@ -40,7 +41,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
       <header className="flex flex-col gap-2 border-b border-stone-200 pb-6">
         <div className="flex flex-wrap items-center gap-3">
-          <p className="font-mono text-sm text-stone-500">PayPal case {c.paypal_dispute_id}</p>
+          <p className="font-mono text-sm text-stone-500"><span className="font-medium text-paypal">PayPal</span> case {c.paypal_dispute_id}</p>
           <span className="ml-auto"><StatusChip status={c.paypal_status} /></span>
         </div>
         <h1 className="text-2xl font-semibold tracking-tight text-balance">{c.item_name || "Order"}{" · "}{usd(c.amount)}</h1>
@@ -49,7 +50,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
       <section className="flex flex-col gap-4">
         <div>
-          <h2 className="text-lg font-semibold">Which side are you on?</h2>
+          <h2 className="text-lg font-semibold"><Reveal delay={350}>Which side are you on?</Reveal></h2>
           <p className="text-sm text-stone-600">Both sides see the same facts. Only the buttons differ.</p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -57,17 +58,17 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <Link
               key={d.role}
               href={`/case/${c.id}/${d.role}`}
-              className="group flex flex-col gap-2 rounded-xl border border-stone-200 bg-white p-5 hover:border-stone-900 focus-visible:border-stone-900 focus-visible:outline-none"
+              className={`group flex flex-col gap-2 rounded-2xl p-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900 ${TONE[d.role].soft}`}
             >
-              <span className="text-xs font-semibold uppercase tracking-wide text-stone-500">{d.role}</span>
+              <span className={`text-xs font-bold uppercase tracking-widest ${TONE[d.role].text}`}>{d.role}</span>
               <span className="text-xl font-semibold tracking-tight">{d.who}</span>
-              <span className="text-sm text-stone-600">{d.can}</span>
-              <span className="mt-2 w-fit rounded-lg bg-stone-900 px-4 py-2 text-sm font-medium text-white group-hover:bg-stone-700">{d.title}</span>
+              <span className="text-sm text-stone-700">{d.can}</span>
+              <span className={`mt-2 w-fit rounded-lg px-4 py-2 text-sm font-medium ${TONE[d.role].solid} group-hover:opacity-90`}>{d.title}</span>
             </Link>
           ))}
         </div>
         <p className="max-w-lg text-xs text-pretty text-stone-500">
-          No password is needed here: this is a sandbox prototype, so one person can try both sides. In a real version each side would arrive already signed in through PayPal.
+          <Hl>No password is needed here: this is a sandbox prototype, so one person can try both sides. In a real version each side would arrive already signed in through PayPal.</Hl>
         </p>
       </section>
     </main>

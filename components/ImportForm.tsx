@@ -30,12 +30,12 @@ export function ImportForm() {
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-2">
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <input
           value={disputeId}
           onChange={(e) => setDisputeId(e.target.value)}
-          placeholder="PayPal case ID, e.g. PP-R-ABC-12345678 (leave empty for the newest)"
-          className="min-w-0 flex-1 rounded-lg border border-stone-300 bg-white px-3 py-2 font-mono text-sm outline-none placeholder:text-stone-500 focus:border-stone-500"
+          placeholder="PayPal case ID, e.g. PP-R-ABC-12345678"
+          className="min-w-0 flex-1 border-0 border-b border-stone-400 bg-transparent px-0 py-2 font-mono text-sm outline-none placeholder:text-stone-500 focus:border-stone-900"
           aria-label="PayPal case ID"
         />
         <button

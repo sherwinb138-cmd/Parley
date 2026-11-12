@@ -3,7 +3,8 @@
 // plus the form the buyer or seller uses to add a photo or a statement.
 import { useState } from "react";
 import type { CaseBundle, Party } from "@/lib/case/types";
-import { EvidenceId, SourceBadge, shortDate } from "./ui";
+import { Hl } from "./Reveal";
+import { EvidenceId, SourceBadge, TONE, shortDate } from "./ui";
 
 export function CaseFile({ bundle, role, onChanged }: { bundle: CaseBundle; role: Party; onChanged: () => void }) {
   const { evidence } = bundle;
@@ -18,7 +19,7 @@ export function CaseFile({ bundle, role, onChanged }: { bundle: CaseBundle; role
 
       <ol className="flex flex-col gap-3">
         {evidence.map((e) => (
-          <li key={e.id} id={`evidence-${e.id}`} className="scroll-mt-24 rounded-xl border border-stone-200 bg-white p-4">
+          <li key={e.id} id={`evidence-${e.id}`} className="scroll-mt-24 rounded-2xl bg-stone-100/80 p-4">
             <div className="flex flex-wrap items-center gap-2">
               <EvidenceId id={e.id} />
               <SourceBadge source={e.source} />
@@ -30,7 +31,7 @@ export function CaseFile({ bundle, role, onChanged }: { bundle: CaseBundle; role
               <img
                 src={`/api/cases/${bundle.case.id}/evidence/${e.id}/file`}
                 alt={e.title}
-                className="mt-3 max-h-64 rounded-lg border border-stone-200 object-contain"
+                className="mt-3 max-h-64 rounded-xl object-contain"
               />
             )}
             <Body text={e.body} />
@@ -58,9 +59,9 @@ function Body({ text }: { text: string | null }) {
   const ai = at === -1 ? "" : text.slice(at + PHOTO_MARK.length).trim();
   return (
     <>
-      {own && <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-stone-700">{own}</p>}
+      {own && <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-stone-700"><Hl>{own}</Hl></p>}
       {ai && (
-        <div className="mt-2 rounded-lg border border-dashed border-stone-300 bg-stone-50 p-3">
+        <div className="mt-2 rounded-xl bg-white p-3">
           <p className="text-xs font-medium text-stone-500">AI description of photo. What a model sees in the image, not a verified fact. The photo itself is the evidence.</p>
           <p className="mt-1 text-sm leading-relaxed text-stone-700">{ai}</p>
         </div>
@@ -100,27 +101,27 @@ function AddEvidence({ caseId, role, onAdded }: { caseId: string; role: Party; o
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-3 rounded-xl border border-dashed border-stone-300 bg-stone-50 p-4">
-      <p className="text-sm font-medium">Add evidence as the {role}</p>
+    <form onSubmit={submit} className={`flex flex-col gap-3 rounded-2xl p-4 ${TONE[role].soft}`}>
+      <p className={`text-sm font-semibold ${TONE[role].text}`}>Add evidence as the {role}</p>
       <textarea
         value={note}
         onChange={(e) => setNote(e.target.value)}
         rows={2}
         maxLength={2000}
         placeholder="Write a statement, or describe the photo you are adding"
-        className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm outline-none focus:border-stone-500"
+        className="rounded-lg border-0 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-stone-300"
       />
       <div className="flex flex-wrap items-center gap-3">
         <input
           type="file"
           accept="image/jpeg,image/png,image/webp"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
-          className="text-sm text-stone-600 file:mr-3 file:rounded-lg file:border-0 file:bg-stone-200 file:px-3 file:py-1.5 file:text-sm file:font-medium"
+          className="text-sm text-stone-600 file:mr-3 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-1.5 file:text-sm file:font-medium"
         />
         <button
           type="submit"
           disabled={busy || (!note.trim() && !file)}
-          className="ml-auto rounded-lg bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700 disabled:opacity-50"
+          className={`ml-auto rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 ${TONE[role].solid} ${TONE[role].hover}`}
         >
           {busy ? "Adding…" : "Add to case file"}
         </button>

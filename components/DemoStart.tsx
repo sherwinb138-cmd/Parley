@@ -40,7 +40,7 @@ export function DemoStart() {
             {available === null ? " Checking PayPal…" : available > 0 ? ` ${available} open case${available === 1 ? "" : "s"} left.` : " None are open right now; the finished cases below show the full flow."}
           </p>
         </div>
-        <button onClick={start} disabled={busy || !available} className="rounded-lg border border-stone-300 px-4 py-1.5 text-sm font-medium hover:bg-stone-100 disabled:opacity-50">
+        <button onClick={start} disabled={busy || !available} className="rounded-lg bg-stone-100 px-4 py-1.5 text-sm font-medium hover:bg-stone-200 disabled:opacity-50">
           {busy ? "Opening from PayPal…" : "Start a live case"}
         </button>
       </div>

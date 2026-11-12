@@ -314,7 +314,14 @@ _Update after each session: what works, what's broken, what's next._
 - **Level 9 built (Wed 11 Nov, 13:00), not yet run.** `npm run demo:save <case IDs>` (laptop) marks RESOLVED cases as read-only replays with a saved analysis. Replays are never synced and never re-analyzed. Home screen: "Finished cases" (replays), "Live cases" with "Start a live case" (`/api/demo/start`, counts open inquiry-stage disputes), then the import box.
 - **Debate 4 (Wed 11 Nov): the lead demo case becomes "wrong colour with a buyer photo"**, settled by a partial offer (a return from the US to India costs more than the item). Condition: photo upload must first pass on the hosted app; if not, the lead stays "shipped, never delivered". Keep "shipped, never delivered" as the short second example. No login page: say plainly that the prototype lets one person play both sides and that a real version would use the PayPal login. Never say Parley is part of PayPal.
 - **Level 10 polish built (Wed 11 Nov, 19:30).** Case screen in story order: "In short" sentence + summary, three-step strip, claims and evidence (with the photo inside the map), Policy check with plain-language rule titles (first rule open), options, case file. The "In short" sentence is a new AI field (`in_short`), checked for predictions, saved as the first line of `policy_checks.summary` (`In short: …\n`), so no database change. Home screen: one-line story per case and the prototype note. `npm run demo:save fresh <ids>` re-runs the AI.
-- **Next:** the builder creates the lead case (fresh indigo sari order, "not as described", buyer photo), settles it by offer, then `demo:save fresh` on the finished cases. Then recordings, video, README, submit Thu 20:00.
+- **Levels 9 and 10 done (Wed 11 Nov, 20:20).** Lead case `PP-R-COH-10198899` (indigo sari, buyer photo, $16 offer accepted on PayPal). Three replays saved: COH, HBS, QEG. Open live case: `PP-R-NBC-10198772` ("changed my mind").
+- **Design pass 2 (Thu 12 Nov, 15:40).**
+  - Colour system in `app/globals.css`: white page, black text, grey secondary; violet = buyer, teal = seller, blue = PayPal, used the same way on every screen (`TONE` in `components/ui.tsx`). Boxes are borderless soft highlights.
+  - `components/Reveal.tsx`: `Hl` puts the word "PayPal" in blue; `Reveal` also makes words appear one by one. Set `ANIMATIONS = false` there to switch all animation off.
+  - Home: headline left, import box right, then "Finished cases" and "Live cases" side by side. One "Open case" button per case.
+  - `app/case/[id]/page.tsx`: entry screen with two doors, "Enter as the buyer" / "Enter as the seller". No password; a real version would use the PayPal login.
+  - Case screen: left column (header, analysis bar, "In short") stays in view; right column has four tabs: Claims, Policy check, Ways to settle, Case file. Evidence chips open the Case file tab.
+- **Next:** record the video, Devpost text, submit Thu 20:00.
 
 ## 11. Changes from the design debate (9 Nov)
 

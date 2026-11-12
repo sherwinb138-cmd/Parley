@@ -14,7 +14,7 @@ const STATUS_TEXT: Record<string, { label: string; tone: string }> = {
   OPEN: { label: "Open", tone: "bg-amber-100 text-amber-900" },
   WAITING_FOR_SELLER_RESPONSE: { label: "Waiting for the seller", tone: "bg-amber-100 text-amber-900" },
   WAITING_FOR_BUYER_RESPONSE: { label: "Waiting for the buyer", tone: "bg-sky-100 text-sky-900" },
-  UNDER_REVIEW: { label: "PayPal is updating the case", tone: "bg-stone-200 text-stone-800" },
+  UNDER_REVIEW: { label: "PayPal is updating the case", tone: "bg-paypal-soft text-paypal" },
   RESOLVED: { label: "Resolved on PayPal", tone: "bg-emerald-100 text-emerald-900" },
 };
 
@@ -23,15 +23,19 @@ export function StatusChip({ status }: { status: string }) {
   return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${s.tone}`}>{s.label}</span>;
 }
 
-const SOURCE_TONE: Record<EvidenceSource, string> = {
-  paypal: "bg-blue-50 text-blue-900 ring-blue-200",
-  buyer: "bg-violet-50 text-violet-900 ring-violet-200",
-  seller: "bg-teal-50 text-teal-900 ring-teal-200",
-};
+// One colour per actor, used the same way on every screen: violet = buyer, teal = seller, blue = PayPal.
+export const TONE = {
+  buyer: { soft: "bg-buyer-soft", text: "text-buyer", solid: "bg-buyer text-white", hover: "hover:bg-buyer/90" },
+  seller: { soft: "bg-seller-soft", text: "text-seller", solid: "bg-seller text-white", hover: "hover:bg-seller/90" },
+  paypal: { soft: "bg-paypal-soft", text: "text-paypal", solid: "bg-paypal text-white", hover: "hover:bg-paypal/90" },
+} as const;
+
+// A box without a border: a soft grey highlight on the white page.
+export const BOX = "rounded-2xl bg-stone-100/80";
 
 export function SourceBadge({ source }: { source: EvidenceSource }) {
   const label = source === "paypal" ? "PayPal record" : source === "buyer" ? "From the buyer" : "From the seller";
-  return <span className={`inline-flex rounded px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ${SOURCE_TONE[source]}`}>{label}</span>;
+  return <span className={`inline-flex rounded px-1.5 py-0.5 text-xs font-medium ${TONE[source].soft} ${TONE[source].text}`}>{label}</span>;
 }
 
 export function EvidenceId({ id }: { id: string }) {
@@ -41,7 +45,7 @@ export function EvidenceId({ id }: { id: string }) {
 /** An evidence ID with its name next to it, so nobody has to look up what "E3" is. Clicking jumps to the item. */
 export function EvidenceChip({ id, title }: { id: string; title?: string }) {
   return (
-    <a href={`#evidence-${id}`} className="inline-flex max-w-full items-center gap-1.5 rounded bg-stone-100 py-0.5 pl-0.5 pr-2 text-xs text-stone-700 hover:bg-stone-200">
+    <a href={`#evidence-${id}`} className="inline-flex max-w-full items-center gap-1.5 rounded bg-white py-0.5 pl-0.5 pr-2 text-xs text-stone-700 hover:bg-stone-200">
       <EvidenceId id={id} />
       {title && <span className="truncate">{title}</span>}
     </a>
