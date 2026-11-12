@@ -30,8 +30,8 @@ export const TONE = {
   paypal: { soft: "bg-paypal-soft", text: "text-paypal", solid: "bg-paypal text-white", hover: "hover:bg-paypal/90" },
 } as const;
 
-// A box without a border on the tinted case screen: a soft white panel. White cards sit inside it.
-export const BOX = "rounded-2xl bg-white/65";
+// A box without a border: a grey panel on the white page.
+export const BOX = "rounded-2xl bg-panel";
 
 export function SourceBadge({ source }: { source: EvidenceSource }) {
   const label = source === "paypal" ? "PayPal record" : source === "buyer" ? "From the buyer" : "From the seller";

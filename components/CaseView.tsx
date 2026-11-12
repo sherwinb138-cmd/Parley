@@ -138,7 +138,7 @@ export function CaseView({ caseId, role }: { caseId: string; role: Party }) {
         </div>
 
         {/* Right: four tabs. Every tab stays loaded, so nothing typed in a form is lost when switching. */}
-        <div className="flex min-w-0 flex-col gap-4 rounded-3xl bg-white/65 p-3 sm:p-4" onClick={openEvidence}>
+        <div className={`flex min-w-0 flex-col gap-4 rounded-3xl p-3 sm:p-4 ${TONE[role].soft}`} onClick={openEvidence}>
           <div role="tablist" aria-label="Parts of this case" className="flex flex-wrap gap-1">
             {TABS.map((t) => (
               <button
@@ -201,10 +201,10 @@ function Overview({ summary }: { summary: string | null }) {
   );
 }
 
-/** The page frame. Its background is the light version of the side's colour, so it is always clear whose view this is. */
+/** The page frame. The page stays white; the panel on the right carries the light version of the side's colour. */
 function Shell({ role, children }: { role: Party; children: React.ReactNode }) {
   return (
-    <div className={`flex flex-1 flex-col ${TONE[role].soft}`}>
+    <div className="flex flex-1 flex-col" data-view={role}>
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-10">
         <Link href="/" className="font-mono text-sm text-stone-600 hover:text-stone-900">← Parley</Link>
         {children}
