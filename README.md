@@ -7,7 +7,7 @@ Parley gives both sides of a PayPal dispute one shared, AI-organized case file, 
 It is a prototype of a capability PayPal could add to its Resolution Center, built for the PayPal AI Hackathon on PayPal's sandbox. No real money moves anywhere in this project.
 
 - **Live demo:** https://parley-qilw.onrender.com (the free server sleeps when idle, so the first load can take up to a minute)
-- **Video:** _link to be added_
+- **Video:** https://youtu.be/ls3KHv7fn8A
 
 ## The problem
 
@@ -36,7 +36,7 @@ Open the live demo. Under **Finished cases** there are real sandbox disputes tha
 | Tote bag, $30 | The buyer picked "not received" but described a wrong colour. Parley flags the mismatch. Settled by a $12 offer. |
 | Table runner, $35 | Tracking says "shipped", never "delivered". Buyer agreed to a full refund in Parley, seller confirmed. |
 
-Open the buyer view and the seller view of the same case: the facts are identical, and only the buttons differ. **Start a live case** opens a real open sandbox dispute when one is available.
+Click **Open case**, then enter as the buyer or as the seller: the facts are identical, and only the buttons differ. **Start a live case** opens a real open sandbox dispute when one is available.
 
 ## How it works
 
