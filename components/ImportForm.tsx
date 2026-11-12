@@ -35,7 +35,7 @@ export function ImportForm() {
           value={disputeId}
           onChange={(e) => setDisputeId(e.target.value)}
           placeholder="PayPal case ID, e.g. PP-R-ABC-12345678 (leave empty for the newest)"
-          className="min-w-0 flex-1 rounded-lg border border-stone-300 bg-white px-3 py-2 font-mono text-sm outline-none focus:border-stone-500"
+          className="min-w-0 flex-1 rounded-lg border border-stone-300 bg-white px-3 py-2 font-mono text-sm outline-none placeholder:text-stone-500 focus:border-stone-500"
           aria-label="PayPal case ID"
         />
         <button

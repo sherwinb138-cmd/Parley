@@ -25,10 +25,10 @@ export default async function Home() {
       <section className="flex flex-col gap-4">
         <p className="font-mono text-sm text-stone-500">Parley · sandbox prototype</p>
         <h1 className="text-4xl font-semibold tracking-tight">AI organizes the facts. People decide. PayPal settles.</h1>
-        <p className="text-lg text-stone-600">
+        <p className="text-lg text-pretty text-stone-600">
           One shared case file for both sides of a PayPal dispute, with every claim linked to its evidence.
         </p>
-        <p className="text-sm text-stone-500">
+        <p className="max-w-prose text-sm text-pretty text-stone-600">
           A prototype of a capability PayPal could add to its Resolution Center, built on PayPal&apos;s sandbox with test money only. Here one person can open both the buyer view and the seller view; in a real version each side would be identified through their PayPal login.
         </p>
       </section>
@@ -79,7 +79,7 @@ function CaseList({ cases }: { cases: CaseRow[] }) {
       {cases.map((c) => (
         <li key={c.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-stone-200 bg-white p-4">
           <div className="min-w-0 flex-1">
-            <p className="font-medium [overflow-wrap:anywhere]">{c.item_name || "Order"} · {usd(c.amount)}</p>
+            <p className="font-medium text-balance [overflow-wrap:anywhere]">{c.item_name || "Order"}{" ·\u00a0"}{usd(c.amount)}</p>
             {story(c) && <p className="text-sm text-stone-600">{story(c)}</p>}
             <p className="font-mono text-xs text-stone-500">{c.paypal_dispute_id}</p>
           </div>
