@@ -9,7 +9,7 @@ import { CaseFile } from "./CaseFile";
 import { ClaimMap } from "./ClaimMap";
 import { Options } from "./Options";
 import { PolicyCheck } from "./PolicyCheck";
-import { Hl, Reveal } from "./Reveal";
+import { Reveal } from "./Reveal";
 import { BOX, StatusChip, TONE, splitSummary, usd } from "./ui";
 
 type Tab = "claims" | "rules" | "settle" | "file";
@@ -112,25 +112,25 @@ export function CaseView({ caseId, role }: { caseId: string; role: Party }) {
 
           {c.is_replay && (
             <p className={`${BOX} p-4 text-sm text-stone-700`}>
-              <strong>Replay of a finished case.</strong> This is a real sandbox dispute that was settled through Parley. The analysis was saved when it ran, and the buttons are switched off.
+              <strong>Replay of a finished case.</strong> The buttons are switched off.
             </p>
           )}
 
           {!(c.is_replay && bundle.policy) && (
-            <section className={`${BOX} flex flex-col gap-3 p-4`}>
-              <p className="text-sm text-stone-700">
-                {!bundle.policy && <Hl>{"AI can read the case file, link each claim to its evidence, and check PayPal's published rules."}</Hl>}
-                {bundle.policy && !stale && "The analysis matches the current case file."}
-                {stale && "The case file has changed since this analysis. Run it again to include the new evidence."}
+            <section className={`${BOX} flex flex-wrap items-center gap-3 p-4`}>
+              <p className="min-w-0 flex-1 text-sm text-stone-700">
+                {!bundle.policy && "Let AI link each claim to its evidence and check the rules."}
+                {bundle.policy && !stale && "The analysis is up to date."}
+                {stale && "New evidence was added. Run the analysis again."}
               </p>
               <button
                 onClick={() => analyze(Boolean(bundle.policy && !stale))}
                 disabled={analyzing}
-                className="w-fit rounded-lg bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700 disabled:opacity-50"
+                className="rounded-lg bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700 disabled:opacity-50"
               >
                 {analyzing ? "Reading the evidence… (up to a minute)" : bundle.policy ? "Run the analysis again" : "Organize the facts"}
               </button>
-              {analyzeError && <p className="text-sm text-red-700">{analyzeError}</p>}
+              {analyzeError && <p className="w-full text-sm text-red-700">{analyzeError}</p>}
             </section>
           )}
 
@@ -138,8 +138,8 @@ export function CaseView({ caseId, role }: { caseId: string; role: Party }) {
         </div>
 
         {/* Right: four tabs. Every tab stays loaded, so nothing typed in a form is lost when switching. */}
-        <div className="flex min-w-0 flex-col gap-5" onClick={openEvidence}>
-          <div role="tablist" aria-label="Parts of this case" className="flex flex-wrap gap-1 rounded-xl bg-stone-100 p-1">
+        <div className="flex min-w-0 flex-col gap-4 rounded-3xl bg-panel p-3 sm:p-4" onClick={openEvidence}>
+          <div role="tablist" aria-label="Parts of this case" className="flex flex-wrap gap-1">
             {TABS.map((t) => (
               <button
                 key={t.id}
@@ -148,7 +148,7 @@ export function CaseView({ caseId, role }: { caseId: string; role: Party }) {
                 aria-selected={current === t.id}
                 aria-controls={`panel-${t.id}`}
                 onClick={() => setTab(t.id)}
-                className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap ${current === t.id ? "bg-white text-stone-900 shadow-sm" : "text-stone-600 hover:text-stone-900"}`}
+                className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap ${current === t.id ? "bg-white text-stone-900 shadow-sm" : "text-stone-500 hover:text-stone-900"}`}
               >
                 {t.label}
               </button>
@@ -174,7 +174,7 @@ export function CaseView({ caseId, role }: { caseId: string; role: Party }) {
 }
 
 function Empty() {
-  return <p className={`${BOX} p-5 text-sm text-stone-600`}>Nothing here yet. Click &quot;Organize the facts&quot; on the left, and this tab fills in.</p>;
+  return <p className="rounded-2xl bg-white p-5 text-sm text-stone-600">Nothing here yet. Click &quot;Organize the facts&quot; first.</p>;
 }
 
 /** The first thing a reader sees after the analysis: one sentence, then a short neutral summary. */
@@ -188,8 +188,15 @@ function Overview({ summary }: { summary: string | null }) {
           <p className="mt-1 text-lg font-medium leading-snug text-pretty"><Reveal delay={250} step={30}>{inShort}</Reveal></p>
         </>
       )}
-      {rest && <p className={`text-sm leading-relaxed text-stone-700 ${inShort ? "mt-3" : ""}`}><Hl>{rest}</Hl></p>}
-      <p className="mt-3 text-xs text-stone-500"><Hl>{"Written by AI from the case file for both sides. It is not PayPal's decision."}</Hl></p>
+      {rest && (
+        <details className="mt-3">
+          <summary className="flex w-fit cursor-pointer items-center gap-1.5 text-sm text-stone-500 hover:text-stone-900">
+            <span aria-hidden className="chevron inline-block transition-transform">›</span>Full summary
+          </summary>
+          <p className="mt-2 text-sm leading-relaxed text-stone-700">{rest}</p>
+        </details>
+      )}
+      <p className="mt-3 text-xs text-stone-500">Written by AI. Not PayPal&apos;s decision.</p>
     </section>
   );
 }

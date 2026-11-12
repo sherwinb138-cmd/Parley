@@ -3,7 +3,7 @@
 // In a real version each side would arrive already signed in through PayPal.
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Hl, Reveal } from "@/components/Reveal";
+import { Reveal } from "@/components/Reveal";
 import { StatusChip, TONE, usd } from "@/components/ui";
 import { getCase } from "@/lib/db/cases";
 
@@ -25,13 +25,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       role: "buyer" as const,
       who: c.buyer_name || "The buyer",
       title: "Enter as the buyer",
-      can: "See the shared case file, add a statement or a photo, and say which option you would accept.",
+      can: "Add evidence and choose an option.",
     },
     {
       role: "seller" as const,
       who: c.seller_name || "The seller",
       title: "Enter as the seller",
-      can: "See the same case file, add a statement or a photo, and send an offer or confirm a refund.",
+      can: "Add evidence, send an offer or refund.",
     },
   ];
 
@@ -51,7 +51,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       <section className="flex flex-col gap-4">
         <div>
           <h2 className="text-lg font-semibold"><Reveal delay={350}>Which side are you on?</Reveal></h2>
-          <p className="text-sm text-stone-600">Both sides see the same facts. Only the buttons differ.</p>
+          <p className="text-sm text-stone-600">Both sides see the same facts.</p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           {doors.map((d) => (
@@ -68,7 +68,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           ))}
         </div>
         <p className="max-w-lg text-xs text-pretty text-stone-500">
-          <Hl>No password is needed here: this is a sandbox prototype, so one person can try both sides. In a real version each side would arrive already signed in through PayPal.</Hl>
+          No password in this prototype. A real version would use the PayPal login.
         </p>
       </section>
     </main>

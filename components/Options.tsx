@@ -37,10 +37,10 @@ export function Options({ bundle, role, onBundle }: Props) {
   }
 
   return (
-    <section className="flex flex-col gap-3">
+    <section className="flex flex-col gap-3 p-1 sm:p-2">
       <div>
         <h2 className="text-lg font-semibold">Ways to settle</h2>
-        <p className="text-sm text-stone-600"><Hl>Amounts are set by fixed rules in code, not by AI. Nothing is sent to PayPal until a person clicks.</Hl></p>
+        <p className="text-sm text-stone-600">Amounts are set by fixed rules in code, not by AI.</p>
       </div>
 
       <Progress bundle={bundle} role={role} />
@@ -48,7 +48,7 @@ export function Options({ bundle, role, onBundle }: Props) {
 
       <div className="grid gap-3 md:grid-cols-2">
         {options.map((o) => (
-          <div key={o.id} className={`flex flex-col gap-2 rounded-2xl p-5 ${c.agreed_option === o.id ? "bg-emerald-50 ring-2 ring-emerald-300" : "bg-stone-100/80"}`}>
+          <div key={o.id} className={`flex flex-col gap-2 rounded-2xl p-5 ${c.agreed_option === o.id ? "bg-white ring-2 ring-emerald-400" : "bg-white"}`}>
             <p className="text-2xl font-semibold tracking-tight">{usd(o.amount)}</p>
             <p className="text-sm font-medium">{o.label}</p>
             <p className="text-sm text-stone-600"><Hl>{o.rationale}</Hl></p>
@@ -67,11 +67,11 @@ export function Options({ bundle, role, onBundle }: Props) {
 
       {!resolved && (
         <p className="text-sm text-stone-600">
-          No agreement? Either side can ask <span className="font-medium text-paypal">PayPal</span> to step in at any time:{" "}
-          <a href={RESOLUTION_CENTER_URL} target="_blank" rel="noreferrer" className="font-medium text-paypal underline underline-offset-4">
-            escalate this case in PayPal&apos;s Resolution Center
+          No agreement? Either side can{" "}
+          <a href={RESOLUTION_CENTER_URL} target="_blank" rel="noreferrer" className="font-medium underline underline-offset-4">
+            escalate to PayPal
           </a>
-          . The case file stays available to both sides.
+           at any time.
         </p>
       )}
     </section>
@@ -81,7 +81,7 @@ export function Options({ bundle, role, onBundle }: Props) {
 type ActFn = (key: string, path: "agree" | "offer" | "settle", body?: object) => void;
 const primary = "rounded-lg px-3 py-2 text-sm font-medium disabled:opacity-50";
 const sellerBtn = `${primary} ${TONE.seller.solid} ${TONE.seller.hover}`;
-const quiet = "rounded-lg bg-white px-3 py-2 text-sm font-medium hover:bg-stone-200 disabled:opacity-50";
+const quiet = "rounded-lg bg-stone-100 px-3 py-2 text-sm font-medium hover:bg-stone-200 disabled:opacity-50";
 
 /** The line at the top that says where the settlement stands, in words both sides can act on. */
 function Progress({ bundle, role }: { bundle: CaseBundle; role: Party }) {
@@ -92,7 +92,7 @@ function Progress({ bundle, role }: { bundle: CaseBundle; role: Party }) {
     const refunded = c.outcome?.amount_refunded?.value;
     return (
       <p className={`${box} bg-emerald-50 text-emerald-900`}>
-        <strong>Resolved on <span className="text-paypal">PayPal</span>.</strong>
+        <strong>Resolved on PayPal.</strong>
         {refunded ? ` ${usd(refunded)} was refunded to the buyer.` : ""}
         {c.agreed_option === "full" && offer.state !== "accepted" ? " Buyer agreed in Parley. Seller's refund closed the PayPal dispute." : ""}
         {offer.state === "accepted" ? " The buyer accepted the seller's offer on PayPal." : ""}
@@ -102,10 +102,10 @@ function Progress({ bundle, role }: { bundle: CaseBundle; role: Party }) {
   if (c.is_replay) return null;
   if (offer.state === "pending") {
     return (
-      <p className={`${box} bg-paypal-soft text-stone-800`}>
+      <p className={`${box} bg-white text-stone-800`}>
         <strong>An offer{offer.amount ? ` of ${usd(offer.amount)}` : ""} is waiting for the buyer on PayPal.</strong>{" "}
         {role === "buyer" ? "Accept or decline it in " : "The buyer accepts or declines it in "}
-        <a href={RESOLUTION_CENTER_URL} target="_blank" rel="noreferrer" className="font-medium text-paypal underline underline-offset-4">PayPal&apos;s Resolution Center</a>. This page updates by itself.
+        <a href={RESOLUTION_CENTER_URL} target="_blank" rel="noreferrer" className="font-medium underline underline-offset-4">PayPal&apos;s Resolution Center</a>. This page updates by itself.
       </p>
     );
   }
@@ -164,7 +164,7 @@ function SellerAction({ o, bundle, busy, act }: { o: SettlementOption; bundle: C
     if (!agreed) return <p className="text-xs text-stone-600">Waiting for the buyer to agree to this in Parley.</p>;
     if (!open) return <button className={sellerBtn} disabled={busy !== null} onClick={() => setOpen(true)}>Confirm full refund</button>;
     return (
-      <div className="flex flex-col gap-2 rounded-xl bg-white p-3">
+      <div className="flex flex-col gap-2 rounded-xl bg-stone-100 p-3">
         <p className="text-sm">Refund {usd(o.amount)} to the buyer now? PayPal moves the money and closes the dispute. This cannot be undone.</p>
         <div className="flex gap-2">
           <button className={sellerBtn} disabled={busy !== null} onClick={() => act(o.id, "settle")}>{busy === o.id ? "Asking PayPal…" : `Yes, refund ${usd(o.amount)}`}</button>
@@ -179,7 +179,7 @@ function SellerAction({ o, bundle, busy, act }: { o: SettlementOption; bundle: C
       {agreed && <span className="w-fit rounded bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-900">The buyer said they would accept this</span>}
       {!open && <button className={agreed ? sellerBtn : quiet} disabled={busy !== null} onClick={() => setOpen(true)}>Send this offer</button>}
       {open && (
-        <div className="flex flex-col gap-2 rounded-xl bg-white p-3">
+        <div className="flex flex-col gap-2 rounded-xl bg-stone-100 p-3">
           <label className="text-xs font-medium text-stone-600" htmlFor={`msg-${o.id}`}>Your message to the buyer (sent inside the PayPal offer)</label>
           <textarea id={`msg-${o.id}`} value={message} onChange={(e) => setMessage(e.target.value)} rows={3} maxLength={1000} className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm outline-none focus:border-stone-500" />
           <div className="flex gap-2">

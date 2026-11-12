@@ -14,7 +14,7 @@ const STATUS_TEXT: Record<string, { label: string; tone: string }> = {
   OPEN: { label: "Open", tone: "bg-amber-100 text-amber-900" },
   WAITING_FOR_SELLER_RESPONSE: { label: "Waiting for the seller", tone: "bg-amber-100 text-amber-900" },
   WAITING_FOR_BUYER_RESPONSE: { label: "Waiting for the buyer", tone: "bg-sky-100 text-sky-900" },
-  UNDER_REVIEW: { label: "PayPal is updating the case", tone: "bg-paypal-soft text-paypal" },
+  UNDER_REVIEW: { label: "PayPal is updating the case", tone: "bg-stone-200 text-stone-800" },
   RESOLVED: { label: "Resolved on PayPal", tone: "bg-emerald-100 text-emerald-900" },
 };
 
@@ -30,8 +30,8 @@ export const TONE = {
   paypal: { soft: "bg-paypal-soft", text: "text-paypal", solid: "bg-paypal text-white", hover: "hover:bg-paypal/90" },
 } as const;
 
-// A box without a border: a soft grey highlight on the white page.
-export const BOX = "rounded-2xl bg-stone-100/80";
+// A box without a border: a grey panel on the white page. White cards sit inside it.
+export const BOX = "rounded-2xl bg-panel";
 
 export function SourceBadge({ source }: { source: EvidenceSource }) {
   const label = source === "paypal" ? "PayPal record" : source === "buyer" ? "From the buyer" : "From the seller";

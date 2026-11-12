@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* Colour system.
-   White is the page. Black is text. Grey is secondary.
+   White is the page and the cards. Black is text. Grey is the padding around groups of cards, and secondary text.
    Three accent colours each mean one thing everywhere: the buyer, the seller, and PayPal. */
 :root {
   --background: #ffffff;
@@ -12,6 +12,7 @@
   --seller-soft: #e9f6f4;
   --paypal: #1d4ed8;       /* blue */
   --paypal-soft: #eef3fe;
+  --panel: #efeeec;        /* grey: the padding around groups of content */
 }
 
 @theme inline {
@@ -23,6 +24,7 @@
   --color-seller-soft: var(--seller-soft);
   --color-paypal: var(--paypal);
   --color-paypal-soft: var(--paypal-soft);
+  --color-panel: var(--panel);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

@@ -9,7 +9,7 @@ import { EvidenceId, SourceBadge, TONE, shortDate } from "./ui";
 export function CaseFile({ bundle, role, onChanged }: { bundle: CaseBundle; role: Party; onChanged: () => void }) {
   const { evidence } = bundle;
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex flex-col gap-4 p-1 sm:p-2">
       <div className="flex items-baseline justify-between gap-4">
         <h2 className="text-lg font-semibold">Case file</h2>
         <p className="font-mono text-xs text-stone-500" title="One fingerprint for the whole case file. It changes if any evidence changes.">
@@ -19,7 +19,7 @@ export function CaseFile({ bundle, role, onChanged }: { bundle: CaseBundle; role
 
       <ol className="flex flex-col gap-3">
         {evidence.map((e) => (
-          <li key={e.id} id={`evidence-${e.id}`} className="scroll-mt-24 rounded-2xl bg-stone-100/80 p-4">
+          <li key={e.id} id={`evidence-${e.id}`} className="scroll-mt-24 rounded-2xl bg-white p-4">
             <div className="flex flex-wrap items-center gap-2">
               <EvidenceId id={e.id} />
               <SourceBadge source={e.source} />
@@ -61,7 +61,7 @@ function Body({ text }: { text: string | null }) {
     <>
       {own && <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-stone-700"><Hl>{own}</Hl></p>}
       {ai && (
-        <div className="mt-2 rounded-xl bg-white p-3">
+        <div className="mt-2 rounded-xl bg-stone-100 p-3">
           <p className="text-xs font-medium text-stone-500">AI description of photo. What a model sees in the image, not a verified fact. The photo itself is the evidence.</p>
           <p className="mt-1 text-sm leading-relaxed text-stone-700">{ai}</p>
         </div>
@@ -127,7 +127,7 @@ function AddEvidence({ caseId, role, onAdded }: { caseId: string; role: Party; o
         </button>
       </div>
       {error && <p className="text-sm text-red-700">{error}</p>}
-      <p className="text-xs text-stone-500">Both sides see everything in the case file. Photos: JPG, PNG or WebP, up to 5 MB.</p>
+      <p className="text-xs text-stone-500">Both sides see it. JPG, PNG or WebP, up to 5 MB.</p>
     </form>
   );
 }

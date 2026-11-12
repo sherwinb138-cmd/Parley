@@ -36,11 +36,11 @@ export function DemoStart() {
         <div className="min-w-0 flex-1 basis-64">
           <p className="font-medium">Try a live case</p>
           <p className="text-sm text-stone-600">
-            Opens a real sandbox dispute for you to settle from both sides.
-            {available === null ? " Checking PayPal…" : available > 0 ? ` ${available} open case${available === 1 ? "" : "s"} left.` : " None are open right now; the finished cases below show the full flow."}
+            A real open dispute to settle from both sides.
+            {available === null ? " Checking PayPal…" : available > 0 ? ` ${available} open case${available === 1 ? "" : "s"} left.` : " None are open right now."}
           </p>
         </div>
-        <button onClick={start} disabled={busy || !available} className="rounded-lg bg-stone-100 px-4 py-1.5 text-sm font-medium hover:bg-stone-200 disabled:opacity-50">
+        <button onClick={start} disabled={busy || !available} className="rounded-lg bg-white px-4 py-1.5 text-sm font-medium hover:bg-stone-50 disabled:opacity-50">
           {busy ? "Opening from PayPal…" : "Start a live case"}
         </button>
       </div>
