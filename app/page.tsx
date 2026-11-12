@@ -29,7 +29,7 @@ export default async function Home() {
           One shared case file for both sides of a PayPal dispute, with every claim linked to its evidence.
         </p>
         <p className="max-w-lg text-sm text-pretty text-stone-600">
-          A prototype of a capability PayPal could add to its Resolution Center, built on PayPal&apos;s sandbox with test money only. Here one person can open both the buyer view and the seller view; in a real version each side would be identified through their PayPal login.
+          A sandbox prototype of a capability PayPal could add to its Resolution Center. Open any case as the buyer or as the seller to see both sides of the same case file.
         </p>
       </section>
 
