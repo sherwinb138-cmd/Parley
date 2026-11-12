@@ -87,7 +87,7 @@ export function PolicyCheck({ bundle }: { bundle: CaseBundle }) {
       </p>
 
       {p.checker && (
-        <p className="border-t border-stone-300 pt-3 text-xs text-stone-500">
+        <p className="border-t border-stone-900/10 pt-3 text-xs text-stone-600">
           Checked by code: {p.checker.links_verified} quote{p.checker.links_verified === 1 ? "" : "s"} verified against the evidence
           {p.checker.links_removed > 0 ? `, ${p.checker.links_removed} removed because the quote or evidence ID could not be verified` : ", none removed"}.
           {p.model ? ` Model: ${p.model}.` : ""}

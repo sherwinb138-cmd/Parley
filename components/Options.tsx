@@ -70,8 +70,8 @@ export function Options({ bundle, role, onBundle }: Props) {
           No agreement? Either side can{" "}
           <a href={RESOLUTION_CENTER_URL} target="_blank" rel="noreferrer" className="font-medium underline underline-offset-4">
             escalate to PayPal
-          </a>
-           at any time.
+          </a>{" "}
+          at any time.
         </p>
       )}
     </section>

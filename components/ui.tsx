@@ -23,15 +23,15 @@ export function StatusChip({ status }: { status: string }) {
   return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${s.tone}`}>{s.label}</span>;
 }
 
-// One colour per actor, used the same way on every screen: violet = buyer, teal = seller, blue = PayPal.
+// One colour per actor, used the same way on every screen: wine = buyer, gold = seller, blue = PayPal.
 export const TONE = {
   buyer: { soft: "bg-buyer-soft", text: "text-buyer", solid: "bg-buyer text-white", hover: "hover:bg-buyer/90" },
-  seller: { soft: "bg-seller-soft", text: "text-seller", solid: "bg-seller text-white", hover: "hover:bg-seller/90" },
+  seller: { soft: "bg-seller-soft", text: "text-seller-ink", solid: "bg-seller text-stone-950", hover: "hover:bg-seller/90" },
   paypal: { soft: "bg-paypal-soft", text: "text-paypal", solid: "bg-paypal text-white", hover: "hover:bg-paypal/90" },
 } as const;
 
-// A box without a border: a grey panel on the white page. White cards sit inside it.
-export const BOX = "rounded-2xl bg-panel";
+// A box without a border on the tinted case screen: a soft white panel. White cards sit inside it.
+export const BOX = "rounded-2xl bg-white/65";
 
 export function SourceBadge({ source }: { source: EvidenceSource }) {
   const label = source === "paypal" ? "PayPal record" : source === "buyer" ? "From the buyer" : "From the seller";

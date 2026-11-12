@@ -21,7 +21,7 @@ export function ClaimMap({ bundle }: { bundle: CaseBundle }) {
         if (!mine.length) return null;
         return (
           <div key={party} className="flex flex-col gap-2">
-            <h3 className={`w-fit rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-widest ${TONE[party].soft} ${TONE[party].text}`}>{party === "buyer" ? "The buyer says" : "The seller says"}</h3>
+            <h3 className={`w-fit rounded-full bg-white px-2.5 py-1 text-xs font-bold uppercase tracking-widest ${TONE[party].text}`}>{party === "buyer" ? "The buyer says" : "The seller says"}</h3>
             {mine.map((c) => {
               const mineLinks = links.filter((l) => l.claim_id === c.id);
               return (

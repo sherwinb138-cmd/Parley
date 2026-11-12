@@ -68,8 +68,8 @@ export function CaseView({ caseId, role }: { caseId: string; role: Party }) {
     };
   }, [load]);
 
-  if (error && !bundle) return <Shell><p className="text-red-700">{error}</p></Shell>;
-  if (!bundle) return <Shell><p className="text-stone-500">Loading the case from PayPal…</p></Shell>;
+  if (error && !bundle) return <Shell role={role}><p className="text-red-700">{error}</p></Shell>;
+  if (!bundle) return <Shell role={role}><p className="text-stone-500">Loading the case from PayPal…</p></Shell>;
 
   const c = bundle.case;
   const other: Party = role === "buyer" ? "seller" : "buyer";
@@ -87,7 +87,7 @@ export function CaseView({ caseId, role }: { caseId: string; role: Party }) {
   }
 
   return (
-    <Shell>
+    <Shell role={role}>
       <div className="grid gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         {/* Left: the case and its short summary. It stays in view while the right side scrolls. */}
         <div className="flex flex-col gap-5 lg:sticky lg:top-8 lg:self-start">
@@ -138,7 +138,7 @@ export function CaseView({ caseId, role }: { caseId: string; role: Party }) {
         </div>
 
         {/* Right: four tabs. Every tab stays loaded, so nothing typed in a form is lost when switching. */}
-        <div className="flex min-w-0 flex-col gap-4 rounded-3xl bg-panel p-3 sm:p-4" onClick={openEvidence}>
+        <div className="flex min-w-0 flex-col gap-4 rounded-3xl bg-white/65 p-3 sm:p-4" onClick={openEvidence}>
           <div role="tablist" aria-label="Parts of this case" className="flex flex-wrap gap-1">
             {TABS.map((t) => (
               <button
@@ -201,11 +201,14 @@ function Overview({ summary }: { summary: string | null }) {
   );
 }
 
-function Shell({ children }: { children: React.ReactNode }) {
+/** The page frame. Its background is the light version of the side's colour, so it is always clear whose view this is. */
+function Shell({ role, children }: { role: Party; children: React.ReactNode }) {
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-10">
-      <Link href="/" className="font-mono text-sm text-stone-500 hover:text-stone-900">← Parley</Link>
-      {children}
-    </main>
+    <div className={`flex flex-1 flex-col ${TONE[role].soft}`}>
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-10">
+        <Link href="/" className="font-mono text-sm text-stone-600 hover:text-stone-900">← Parley</Link>
+        {children}
+      </main>
+    </div>
   );
 }

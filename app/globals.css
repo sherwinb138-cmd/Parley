@@ -6,10 +6,11 @@
 :root {
   --background: #ffffff;
   --foreground: #1c1917;
-  --buyer: #6d28d9;        /* violet */
-  --buyer-soft: #f3effe;
-  --seller: #0f766e;       /* teal */
-  --seller-soft: #e9f6f4;
+  --buyer: #873e52;        /* wine */
+  --buyer-soft: #f6ecef;   /* its light version: boxes, and the page behind the buyer view */
+  --seller: #b99538;       /* gold */
+  --seller-ink: #775c14;   /* a darker gold, for seller text on light backgrounds (plain gold is too pale to read) */
+  --seller-soft: #f9f3e2;  /* its light version: boxes, and the page behind the seller view */
   --paypal: #1d4ed8;       /* blue */
   --paypal-soft: #eef3fe;
   --panel: #efeeec;        /* grey: the padding around groups of content */
@@ -22,6 +23,7 @@
   --color-buyer-soft: var(--buyer-soft);
   --color-seller: var(--seller);
   --color-seller-soft: var(--seller-soft);
+  --color-seller-ink: var(--seller-ink);
   --color-paypal: var(--paypal);
   --color-paypal-soft: var(--paypal-soft);
   --color-panel: var(--panel);
