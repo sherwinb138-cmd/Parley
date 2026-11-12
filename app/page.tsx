@@ -29,7 +29,7 @@ export default async function Home() {
           One shared case file for both sides of a PayPal dispute, with every claim linked to its evidence.
         </p>
         <p className="max-w-lg text-sm text-pretty text-stone-600">
-          A sandbox prototype of a capability PayPal could add to its Resolution Center. Open any case as the buyer or as the seller to see both sides of the same case file.
+          A sandbox prototype of a capability PayPal could add to its Resolution Center. Open any case and enter as the buyer or as the seller to see both sides of the same case file.
         </p>
       </section>
 
@@ -37,7 +37,7 @@ export default async function Home() {
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">Finished cases</h2>
-        <p className="text-sm text-stone-600">Real sandbox disputes settled through Parley, kept as replays. Open either side to see the shared case file, the claim-to-evidence map and how the case closed on PayPal.</p>
+        <p className="text-sm text-stone-600">Real sandbox disputes settled through Parley, kept as replays. Open one and enter as either side to see the shared case file, the claim-to-evidence map and how the case closed on PayPal.</p>
         {!loadError && replays.length === 0 && <p className="text-sm text-stone-500">No finished cases have been saved yet.</p>}
         <CaseList cases={replays} />
       </section>
@@ -84,8 +84,7 @@ function CaseList({ cases }: { cases: CaseRow[] }) {
             <p className="font-mono text-xs text-stone-500">{c.paypal_dispute_id}</p>
           </div>
           <StatusChip status={c.paypal_status} />
-          <Link href={`/case/${c.id}/buyer`} className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm hover:bg-stone-100">Buyer view</Link>
-          <Link href={`/case/${c.id}/seller`} className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm hover:bg-stone-100">Seller view</Link>
+          <Link href={`/case/${c.id}`} className="rounded-lg bg-stone-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-stone-700">Open case</Link>
         </li>
       ))}
     </ul>

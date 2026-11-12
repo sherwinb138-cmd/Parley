@@ -21,7 +21,7 @@ export function ImportForm() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Import failed.");
-      router.push(`/case/${data.id}/seller`);
+      router.push(`/case/${data.id}`);
     } catch (err) {
       setError((err as Error).message);
       setBusy(false);

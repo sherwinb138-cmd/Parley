@@ -23,7 +23,7 @@ export function DemoStart() {
       const res = await fetch("/api/demo/start", { method: "POST" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not start a live case.");
-      router.push(`/case/${data.id}/seller`);
+      router.push(`/case/${data.id}`);
     } catch (e) {
       setError((e as Error).message);
       setBusy(false);
