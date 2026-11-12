@@ -18,10 +18,10 @@ export default async function Home() {
   }
 
   const replays = cases.filter((c) => c.is_replay);
-  const live = cases.filter((c) => !c.is_replay);
+  const live = cases.filter((c) => !c.is_replay && c.paypal_status !== "RESOLVED");
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-6 py-16">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-12 px-6 py-16">
       <section className="flex flex-col gap-4">
         <p className="font-mono text-sm text-stone-500">Parley · sandbox prototype</p>
         <h1 className="text-4xl font-semibold tracking-tight">AI organizes the facts. People decide. PayPal settles.</h1>
@@ -37,19 +37,21 @@ export default async function Home() {
       {loadError && <p className="text-sm text-red-700">{loadError}</p>}
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Finished cases</h2>
-        <p className="text-sm text-stone-600">Real sandbox disputes settled through Parley, kept as replays. Open one and enter as either side to see the shared case file, the claim-to-evidence map and how the case closed on PayPal.</p>
+        <div>
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-stone-500">Finished cases</h2>
+          <p className="mt-1 text-sm text-stone-600">Real sandbox disputes settled through Parley. Open one to see both sides.</p>
+        </div>
         {!loadError && replays.length === 0 && <p className="text-sm text-stone-500">No finished cases have been saved yet.</p>}
         <CaseList cases={replays} />
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Live cases</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-stone-500">Live cases</h2>
         <DemoStart />
         <CaseList cases={live} />
       </section>
 
-      <p className="max-w-lg text-sm text-pretty text-stone-600">
+      <p className="max-w-lg border-t border-stone-200 pt-6 text-xs text-pretty text-stone-500">
         A sandbox prototype of a capability PayPal could add to its Resolution Center. Open any case and enter as the buyer or as the seller to see both sides of the same case file.
       </p>
     </main>
@@ -74,13 +76,15 @@ function story(c: CaseRow): string {
 function CaseList({ cases }: { cases: CaseRow[] }) {
   if (!cases.length) return null;
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="divide-y divide-stone-200 border-y border-stone-200">
       {cases.map((c) => (
-        <li key={c.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-stone-200 bg-white p-4">
-          <div className="min-w-0 flex-1">
-            <p className="font-medium text-balance [overflow-wrap:anywhere]">{c.item_name || "Order"}{" ·\u00a0"}{usd(c.amount)}</p>
-            {story(c) && <p className="text-sm text-stone-600">{story(c)}</p>}
-            <p className="font-mono text-xs text-stone-500">{c.paypal_dispute_id}</p>
+        <li key={c.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 py-4">
+          <div className="min-w-0 flex-1 basis-64">
+            <p className="font-medium [overflow-wrap:anywhere]">
+              {itemName(c)}
+              <span className="font-normal text-stone-500">{" ·\u00a0"}{usd(c.amount)}</span>
+            </p>
+            {story(c) && <p className="text-sm text-pretty text-stone-600">{story(c)}</p>}
           </div>
           <StatusChip status={c.paypal_status} />
           <Link href={`/case/${c.id}`} className="rounded-lg bg-stone-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-stone-700">Open case</Link>
@@ -88,4 +92,9 @@ function CaseList({ cases }: { cases: CaseRow[] }) {
       ))}
     </ul>
   );
+}
+
+/** The item without the shop's name after the dash, so each row reads as one short title. */
+function itemName(c: CaseRow): string {
+  return (c.item_name || "Order").split(" - ")[0];
 }
