@@ -28,9 +28,10 @@ export default async function Home() {
         <p className="text-lg text-pretty text-stone-600">
           One shared case file for both sides of a PayPal dispute, with every claim linked to its evidence.
         </p>
-        <p className="max-w-lg text-sm text-pretty text-stone-600">
-          A sandbox prototype of a capability PayPal could add to its Resolution Center. Open any case and enter as the buyer or as the seller to see both sides of the same case file.
-        </p>
+        <div className="mt-2 flex flex-col gap-2">
+          <p className="text-sm text-stone-600">Parley starts when a buyer opens a dispute in PayPal. Enter its case ID to open the shared case file.</p>
+          <ImportForm />
+        </div>
       </section>
 
       {loadError && <p className="text-sm text-red-700">{loadError}</p>}
@@ -48,11 +49,9 @@ export default async function Home() {
         <CaseList cases={live} />
       </section>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Import a dispute from PayPal</h2>
-        <p className="text-sm text-stone-600">Parley starts when a buyer opens a dispute in PayPal. Enter its case ID to open the shared case file.</p>
-        <ImportForm />
-      </section>
+      <p className="max-w-lg text-sm text-pretty text-stone-600">
+        A sandbox prototype of a capability PayPal could add to its Resolution Center. Open any case and enter as the buyer or as the seller to see both sides of the same case file.
+      </p>
     </main>
   );
 }
